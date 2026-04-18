@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MMC | نظام إدارة الإجازات المتكامل - النسخة النهائية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: linear-gradient(145deg, #eef2f9 0%, #e0e8f2 100%); min-height: 100vh; padding: 30px 20px; }
+        .app-container { max-width: 1600px; margin: 0 auto; }
+        .company-header { background: #1a2c3e; color: white; padding: 20px 30px; border-radius: 40px; margin-bottom: 35px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; align-items: center; }
+        .company-header h1 { font-weight: 800; font-size: 1.9rem; }
+        .company-header h1 i { color: #ffb347; margin-left: 12px; }
+        .badge-system { background: #2c4b66; padding: 8px 18px; border-radius: 50px; font-weight: 600; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 28px; margin-bottom: 40px; }
+        .card { background: white; border-radius: 32px; box-shadow: 0 12px 28px rgba(0,0,0,0.08); overflow: hidden; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .card-header { background: #f8fafd; padding: 18px 24px; border-bottom: 2px solid #e9edf2; font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; color: #1f3a4b; }
+        .card-header i { color: #2c7da0; }
+        .card-body { padding: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #1e2f3e; }
+        select, input, button, textarea { width: 100%; padding: 12px 16px; border-radius: 28px; border: 1px solid #cfdfed; font-size: 0.95rem; background: white; outline: none; }
+        button { background: #2c7da0; color: white; font-weight: 700; border: none; cursor: pointer; }
+        button:hover { background: #1f5e7e; }
+        .btn-outline { background: #eef2f9; color: #1f5e7e; border: 1px solid #cbdbe2; }
+        .btn-whatsapp { background: #25D366; }
+        .btn-whatsapp:hover { background: #128C7E; }
+        .btn-excel { background: #1f7b4d; }
+        .btn-danger { background: #dc3545; }
+        .requests-section { background: white; border-radius: 32px; padding: 20px; overflow-x: auto; margin-bottom: 30px; box-shadow: 0 12px 28px rgba(0,0,0,0.08); }
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; margin-bottom: 25px; }
+        .filter-group { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #e4e9f0; }
+        th { background: #f1f5f9; font-weight: 700; }
+        .status-badge { display: inline-block; padding: 4px 14px; border-radius: 40px; font-weight: 600; font-size: 0.75rem; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        .action-btns { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+        .btn-sm { padding: 5px 10px; font-size: 0.7rem; width: auto; border-radius: 40px; }
+        .btn-success-sm { background: #28a745; }
+        .btn-danger-sm { background: #dc3545; }
+        .btn-info-sm { background: #17a2b8; }
+        .balance-box { background: #e9f2f5; padding: 12px; border-radius: 28px; margin-top: 15px; text-align: center; font-weight: 700; }
+        .log-panel { max-height: 200px; overflow-y: auto; background: #f9fafc; border-radius: 24px; padding: 12px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+        .log-entry { padding: 6px; border-bottom: 1px solid #e2e8f0; }
+        .employee-portal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .portal-content { background: white; max-width: 550px; width: 90%; border-radius: 40px; padding: 30px; max-height: 85vh; overflow-y: auto; }
+        .attachment-link { cursor: pointer; color: #2c7da0; text-decoration: underline; }
+        .employee-card { background: #f8fafd; border-radius: 20px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        @media (max-width: 760px) { .company-header h1 { font-size: 1.3rem; } th, td { font-size: 0.7rem; } }
+        footer { text-align: center; margin-top: 40px; font-size: 0.8rem; color: #4a627a; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="company-header">
+        <h1><i class="fas fa-building"></i> MMC | نظام إدارة الإجازات</h1>
+        <div class="badge-system"><i class="fas fa-save"></i> حفظ تلقائي | <i class="fas fa-users"></i> إدارة الموظفين</div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- إضافة موظف جديد -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-user-plus"></i> إضافة موظف جديد</div>
+            <div class="card-body">
+                <div class="form-group"><label>اسم الموظف الجديد</label><input type="text" id="newEmployeeName" placeholder="مثال: مها سعيد"></div>
+                <div class="form-group"><label>الرصيد السنوي (30 يوم)</label><input type="number" id="newEmployeeBalance" value="30" min="0"></div>
+                <button id="addEmployeeBtn"><i class="fas fa-plus"></i> إضافة موظف</button>
+                <div class="balance-box" id="employeesListBox" style="margin-top: 15px; max-height: 200px; overflow-y: auto; text-align: right;">
+                    <strong>قائمة الموظفين:</strong><br>
+                    <div id="employeesList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- إضافة طلب إجازة -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-calendar-plus"></i> إضافة طلب إجازة</div>
+            <div class="card-body">
+                <div class="form-group"><label>الموظف</label><select id="employeeSelect"></select></div>
+                <div class="form-group"><label>نوع الإجازة</label><select id="leaveType">
+                    <option value="سنوية">سنوية</option><option value="مرضية">مرضية</option>
+                    <option value="طارئة">طارئة</option><option value="مامورية">مامورية</option>
+                </select></div>
+                <div class="form-group"><label>تاريخ البدء</label><input type="date" id="startDate"></div>
+                <div class="form-group"><label>عدد الأيام</label><input type="number" id="daysCount" min="1" value="1"></div>
+                <div class="form-group"><label>المرفق</label><input type="file" id="attachmentFile" accept="image/*,application/pdf"></div>
+                <button id="submitRequestBtn"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
+                <div class="balance-box" id="balancePreview">الرصيد المتاح: --</div>
+            </div>
+        </div>
+
+        <!-- الروابط الدائمة والإشعارات -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-link"></i> روابط دائمة لكل موظف</div>
+            <div class="card-body">
+                <div class="form-group"><label>اختر الموظف</label><select id="shareEmployeeSelect"></select></div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                    <button id="generateLinkBtn" class="btn-outline"><i class="fas fa-link"></i> إنشاء الرابط</button>
+                    <button id="copyLinkBtn" class="btn-outline"><i class="fas fa-copy"></i> نسخ الرابط</button>
+                    <button id="whatsappShareBtn" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> مشاركة واتساب</button>
+                </div>
+                <div class="balance-box" id="generatedLinkBox" style="word-break: break-all; font-size: 0.7rem;">💡 اختر موظفاً واضغط "إنشاء الرابط"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- جدول الطلبات -->
+    <div class="requests-section">
+        <div class="filter-bar">
+            <div class="filter-group">
+                <select id="filterEmployee"></select>
+                <input type="date" id="filterDate">
+                <button id="resetFilterBtn" class="btn-outline">إعادة ضبط</button>
+            </div>
+            <div class="filter-group">
+                <select id="approvalRequestSelect"><option value="">اختر طلب للموافقة</option></select>
+                <button id="approveBtn" style="background:#28a745;">موافقة</button>
+                <button id="rejectBtn" style="background:#dc3545;">رفض</button>
+                <button id="exportExcelBtn" class="btn-excel"><i class="fas fa-file-excel"></i> Excel</button>
+            </div>
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="requestsTable">
+                <thead><tr><th>ID</th><th>الموظف</th><th>النوع</th><th>تاريخ البدء</th><th>الأيام</th><th>المرفق</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
+                <tbody id="requestsTableBody"><tr><td colspan="8">جاري التحميل...</td></tr></tbody>
+            </table>
+        </div>
+        <div class="log-panel" id="logPanel" style="margin-top: 15px;"><div class="log-entry">✅ النظام جاهز - يتم حفظ البيانات تلقائياً</div></div>
+    </div>
+    <footer>MMC | حفظ تلقائي في المتصفح | كل موظف يرى بياناته فقط | إدارة كاملة للموظفين</footer>
+</div>
+
+<script>
+    // ===================== تحميل وحفظ البيانات من localStorage =====================
+    let requests = [];
+    let employeesBalance = {};
+    let operationLog = [];
+    let currentPortalEmployee = null; // للموظف الحالي في البوابة
+
+    // حفظ البيانات
+    function saveData() {
+        localStorage.setItem('mmc_requests', JSON.stringify(requests));
+        localStorage.setItem('mmc_employees', JSON.stringify(employeesBalance));
+        localStorage.setItem('mmc_log', JSON.stringify(operationLog.slice(0, 100)));
+    }
+
+    // تحميل البيانات
+    function loadData() {
+        let savedRequests = localStorage.getItem('mmc_requests');
+        let savedEmployees = localStorage.getItem('mmc_employees');
+        let savedLog = localStorage.getItem('mmc_log');
+        
+        if(savedEmployees) {
+            employeesBalance = JSON.parse(savedEmployees);
+        } else {
+            // البيانات الافتراضية
+            employeesBalance = {
+                "أحمد حسن": { totalAnnual: 30, used: 0, role: "employee" },
+                "سارة محمود": { totalAnnual: 30, used: 0, role: "employee" },
+                "محمد علي": { totalAnnual: 30, used: 0, role: "employee" },
+                "نورهان سمير": { totalAnnual: 30, used: 0, role: "employee" },
+                "خالد يوسف": { totalAnnual: 30, used: 0, role: "employee" }
+            };
+        }
+        
+        if(savedRequests) {
+            requests = JSON.parse(savedRequests);
+        } else {
+            requests = [
+                { id: 101, employee: "أحمد حسن", type: "سنوية", startDate: "2026-05-10", days: 5, status: "pending", attachment: null },
+                { id: 102, employee: "سارة محمود", type: "مرضية", startDate: "2026-04-20", days: 2, status: "pending", attachment: null },
+                { id: 103, employee: "محمد علي", type: "سنوية", startDate: "2026-06-01", days: 10, status: "pending", attachment: null },
+                { id: 104, employee: "نورهان سمير", type: "طارئة", startDate: "2026-04-18", days: 1, status: "approved", attachment: null },
+                { id: 105, employee: "خالد يوسف", type: "سنوية", startDate: "2026-07-05", days: 3, status: "pending", attachment: null }
+            ];
+        }
+        
+        if(savedLog) {
+            operationLog = JSON.parse(savedLog);
+        } else {
+            operationLog = [{ time: new Date().toLocaleString('ar-EG'), text: "🚀 بدء تشغيل النظام" }];
+        }
+        
+        recalcUsedBalance();
+    }
+
+    function addLog(msg) {
+        operationLog.unshift({ time: new Date().toLocaleString('ar-EG'), text: msg });
+        if(operationLog.length > 100) operationLog.pop();
+        saveData();
+        renderLog();
+    }
+
+    function renderLog() {
+        const panel = document.getElementById('logPanel');
+        if(panel) panel.innerHTML = operationLog.map(l=>`<div class="log-entry">[${l.time}] ${l.text}</div>`).join('');
+    }
+
+    // حساب الرصيد
+    function getRemainingBalance(emp) {
+        let bal = employeesBalance[emp];
+        if(!bal) return 30;
+        let rem = bal.totalAnnual - bal.used;
+        return rem < 0 ? 0 : rem;
+    }
+
+    function recalcUsedBalance() {
+        for(let emp in employeesBalance) {
+            employeesBalance[emp].used = 0;
+        }
+        requests.forEach(req => {
+            if(req.status === 'approved' && req.type === 'سنوية') {
+                if(employeesBalance[req.employee]) {
+                    employeesBalance[req.employee].used += req.days;
+                }
+            }
+        });
+        saveData();
+    }
+
+    // تحديث قوائم الموظفين في كل الـ selects
+    function updateAllEmployeeSelects() {
+        let employees = Object.keys(employeesBalance);
+        
+        let selects = ['employeeSelect', 'filterEmployee', 'shareEmployeeSelect'];
+        selects.forEach(selectId => {
+            let select = document.getElementById(selectId);
+            if(select) {
+                let currentValue = select.value;
+                select.innerHTML = '';
+                if(selectId === 'filterEmployee') {
+                    let allOption = document.createElement('option');
+                    allOption.value = 'all';
+                    allOption.textContent = 'جميع الموظفين';
+                    select.appendChild(allOption);
+                }
+                employees.forEach(emp => {
+                    let option = document.createElement('option');
+                    option.value = emp;
+                    option.textContent = emp;
+                    select.appendChild(option);
+                });
+                if(currentValue && employees.includes(currentValue)) select.value = currentValue;
+            }
+        });
+        
+        // تحديث عرض قائمة الموظفين
+        let employeesListDiv = document.getElementById('employeesList');
+        if(employeesListDiv) {
+            employeesListDiv.innerHTML = employees.map(emp => `
+                <div class="employee-card">
+                    <span><i class="fas fa-user"></i> ${emp}</span>
+                    <span>الرصيد: ${getRemainingBalance(emp)}/30</span>
+                    <button class="btn-sm btn-danger-sm" onclick="deleteEmployee('${emp}')" style="padding: 4px 8px;">حذف</button>
+                </div>
+            `).join('');
+        }
+        
+        updateBalancePreview();
+    }
+
+    // إضافة موظف جديد
+    function addNewEmployee() {
+        let name = document.getElementById('newEmployeeName').value.trim();
+        let balance = parseInt(document.getElementById('newEmployeeBalance').value);
+        
+        if(!name) { alert("يرجى إدخال اسم الموظف"); return; }
+        if(isNaN(balance) || balance < 0) { alert("الرصيد غير صحيح"); return; }
+        if(employeesBalance[name]) { alert("هذا الموظف موجود بالفعل"); return; }
+        
+        employeesBalance[name] = { totalAnnual: balance, used: 0, role: "employee" };
+        updateAllEmployeeSelects();
+        addLog(`➕ تم إضافة موظف جديد: ${name} (الرصيد: ${balance} يوم)`);
+        document.getElementById('newEmployeeName').value = '';
+        document.getElementById('newEmployeeBalance').value = '30';
+        alert(`✅ تم إضافة الموظف ${name}`);
+    }
+
+    // حذف موظف
+    window.deleteEmployee = function(employeeName) {
+        if(employeeName === currentPortalEmployee) {
+            alert("لا يمكن حذف الموظف أثناء فتح بوابته");
+            return;
+        }
+        if(confirm(`هل أنت متأكد من حذف الموظف "${employeeName}" وجميع طلباته؟`)) {
+            // حذف طلبات الموظف
+            requests = requests.filter(r => r.employee !== employeeName);
+            // حذف الموظف
+            delete employeesBalance[employeeName];
+            updateAllEmployeeSelects();
+            renderRequestsTable();
+            recalcUsedBalance();
+            addLog(`🗑️ تم حذف الموظف ${employeeName} وطلباته`);
+            alert(`تم حذف الموظف ${employeeName}`);
+        }
+    };
+
+    // ===================== الرابط الدائم =====================
+    function generatePermanentLink(employeeName) {
+        let baseUrl = window.location.href.split('?')[0];
+        let encoded = btoa(encodeURIComponent(employeeName));
+        return `${baseUrl}?token=${encoded}`;
+    }
+
+    function openEmployeePortal(employeeName) {
+        currentPortalEmployee = employeeName;
+        let modal = document.createElement('div');
+        modal.className = 'employee-portal';
+        modal.id = 'employeePortal';
+        modal.innerHTML = `
+            <div class="portal-content">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3><i class="fas fa-user"></i> مرحباً ${employeeName}</h3>
+                    <button onclick="closePortal()" style="width:auto; background:#dc3545; padding:8px 16px;">✖ إغلاق</button>
+                </div>
+                <div class="balance-box" style="margin-bottom:20px;">
+                    <i class="fas fa-chart-line"></i> رصيدك السنوي المتبقي: ${getRemainingBalance(employeeName)} / ${employeesBalance[employeeName]?.totalAnnual || 30} يوم
+                </div>
+                <button id="portalNewRequestBtn" style="background:#2c7da0; margin-bottom:20px;">
+                    <i class="fas fa-calendar-plus"></i> تقديم طلب إجازة جديد
+                </button>
+                <h4>📋 طلباتي السابقة</h4>
+                <div id="myRequestsList" style="max-height:300px; overflow-y:auto;"></div>
+                <div style="margin-top:15px; text-align:center;">
+                    <button id="portalRefreshBtn" class="btn-outline" style="width:auto;"><i class="fas fa-sync-alt"></i> تحديث</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        
+        function loadEmployeeRequests() {
+            let myReqs = requests.filter(r => r.employee === employeeName);
+            let listHtml = myReqs.length === 0 ? '<p>لا توجد طلبات سابقة</p>' : 
+                myReqs.map(r => `<div style="border-bottom:1px solid #eee; padding:10px;">
+                    <strong>#${r.id} - ${r.type}</strong> | ${r.startDate} (${r.days} يوم)<br>
+                    <span class="status-badge ${r.status === 'pending' ? 'status-pending' : (r.status === 'approved' ? 'status-approved' : 'status-rejected')}">
+                        ${r.status === 'pending' ? 'قيد الانتظار' : (r.status === 'approved' ? 'موافق' : 'مرفوض')}
+                    </span>
+                    ${r.attachment ? ' <i class="fas fa-paperclip"></i>' : ''}
+                    ${r.status === 'pending' ? `<button class="btn-sm btn-info-sm" onclick="editMyRequest(${r.id})" style="margin-right:10px;">تعديل</button><button class="btn-sm btn-danger-sm" onclick="deleteMyRequest(${r.id})">حذف</button>` : ''}
+                </div>`).join('');
+            document.getElementById('myRequestsList').innerHTML = listHtml;
+            document.getElementById('portalBalance').innerHTML = getRemainingBalance(employeeName);
+        }
+        
+        loadEmployeeRequests();
+        
+        document.getElementById('portalNewRequestBtn').onclick = () => {
+            closePortal();
+            document.getElementById('employeeSelect').value = employeeName;
+            updateBalancePreview();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            alert(`يمكنك الآن تقديم طلب إجازة لـ ${employeeName}`);
+        };
+        
+        document.getElementById('portalRefreshBtn').onclick = () => loadEmployeeRequests();
+    }
+    
+    window.closePortal = function() {
+        currentPortalEmployee = null;
+        let modal = document.getElementById('employeePortal');
+        if(modal) modal.remove();
+    };
+    
+    window.editMyRequest = function(id) {
+        let req = requests.find(r => r.id === id);
+        if(req && req.status === 'pending') {
+            let newDays = prompt("تعديل عدد الأيام:", req.days);
+            if(newDays && !isNaN(parseInt(newDays))) {
+                req.days = parseInt(newDays);
+                let newDate = prompt("تعديل تاريخ البدء (YYYY-MM-DD):", req.startDate);
+                if(newDate) req.startDate = newDate;
+                recalcUsedBalance();
+                renderRequestsTable();
+                addLog(`✏️ الموظف ${req.employee} عدل طلبه #${id}`);
+                alert("تم تعديل الطلب");
+                if(currentPortalEmployee) {
+                    let modal = document.getElementById('employeePortal');
+                    if(modal) {
+                        let myReqsDiv = document.getElementById('myRequestsList');
+                        if(myReqsDiv) myReqsDiv.innerHTML = '<div>جاري التحديث...</div>';
+                        setTimeout(() => {
+                            let updatedReqs = requests.filter(r => r.employee === currentPortalEmployee);
+                            let listHtml = updatedReqs.map(r => `<div style="border-bottom:1px solid #eee; padding:10px;">...</div>`).join('');
+                            document.getElementById('myRequestsList').innerHTML = listHtml;
+                        }, 100);
+                    }
+                }
+            }
+        } else {
+            alert("لا يمكن تعديل هذا الطلب");
+        }
+    };
+    
+    window.deleteMyRequest = function(id) {
+        let idx = requests.findIndex(r => r.id === id);
+        if(idx !== -1 && requests[idx].status === 'pending') {
+            if(confirm("هل أنت متأكد من حذف هذا الطلب؟")) {
+                let req = requests[idx];
+                requests.splice(idx, 1);
+                recalcUsedBalance();
+                renderRequestsTable();
+                addLog(`🗑️ الموظف ${req.employee} حذف طلبه #${id}`);
+                alert("تم حذف الطلب");
+                if(currentPortalEmployee) {
+                    let myReqsDiv = document.getElementById('myRequestsList');
+                    if(myReqsDiv) {
+                        let updatedReqs = requests.filter(r => r.employee === currentPortalEmployee);
+                        myReqsDiv.innerHTML = updatedReqs.map(r => `<div style="border-bottom:1px solid #eee; padding:10px;">
+                            <strong>#${r.id} - ${r.type}</strong> | ${r.startDate} (${r.days} يوم)<br>
+                            <span class="status-badge ${r.status === 'pending' ? 'status-pending' : (r.status === 'approved' ? 'status-approved' : 'status-rejected')}">
+                                ${r.status === 'pending' ? 'قيد الانتظار' : (r.status === 'approved' ? 'موافق' : 'مرفوض')}
+                            </span>
+                            ${r.status === 'pending' ? `<button class="btn-sm btn-info-sm" onclick="editMyRequest(${r.id})" style="margin-right:10px;">تعديل</button><button class="btn-sm btn-danger-sm" onclick="deleteMyRequest(${r.id})">حذف</button>` : ''}
+                        </div>`).join('');
+                    }
+                }
+            }
+        } else {
+            alert("لا يمكن حذف هذا الطلب");
+        }
+    };
+
+    function checkUrlForToken() {
+        let params = new URLSearchParams(window.location.search);
+        let token = params.get('token');
+        if(token) {
+            try {
+                let employeeName = decodeURIComponent(atob(token));
+                if(employeesBalance[employeeName]) {
+                    openEmployeePortal(employeeName);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            } catch(e) { console.error(e); }
+        }
+    }
+
+    // ===================== دوال الطلبات =====================
+    function approveRequestById(id) {
+        let req = requests.find(r => r.id === id);
+        if(!req || req.status !== 'pending') { alert("لا يمكن معالجة هذا الطلب"); return; }
+        if(req.type === 'سنوية') {
+            let bal = getRemainingBalance(req.employee);
+            if(bal < req.days) {
+                alert(`❌ رصيد غير كافٍ للموظف ${req.employee} (المتبقي ${bal} يوم)`);
+                return;
+            }
+        }
+        req.status = 'approved';
+        recalcUsedBalance();
+        renderRequestsTable();
+        updateBalancePreview();
+        addLog(`✅ الموافقة على الطلب #${id} - ${req.employee}`);
+        alert(`✅ تم الموافقة على الطلب #${id}`);
+    }
+
+    function rejectRequestById(id) {
+        let req = requests.find(r => r.id === id);
+        if(!req || req.status !== 'pending') { alert("لا يمكن معالجة هذا الطلب"); return; }
+        req.status = 'rejected';
+        renderRequestsTable();
+        addLog(`❌ رفض الطلب #${id} - ${req.employee}`);
+        alert(`❌ تم رفض الطلب #${id}`);
+    }
+
+    function addNewRequest() {
+        let employee = document.getElementById('employeeSelect').value;
+        let type = document.getElementById('leaveType').value;
+        let startDate = document.getElementById('startDate').value;
+        let days = parseInt(document.getElementById('daysCount').value);
+        let fileInput = document.getElementById('attachmentFile');
+        
+        if(!startDate) { alert("يرجى تحديد تاريخ البدء"); return; }
+        if(isNaN(days) || days < 1) { alert("عدد الأيام غير صحيح"); return; }
+        
+        let processRequest = (attachmentBase64) => {
+            let newId = requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 1;
+            let newRequest = {
+                id: newId, employee, type, startDate, days,
+                status: 'pending',
+                attachment: attachmentBase64 || null
+            };
+            requests.push(newRequest);
+            renderRequestsTable();
+            updateBalancePreview();
+            document.getElementById('startDate').value = '';
+            document.getElementById('daysCount').value = '1';
+            document.getElementById('attachmentFile').value = '';
+            addLog(`➕ إضافة طلب جديد #${newId} - ${employee}`);
+            alert(`✅ تم إضافة الطلب #${newId}`);
+            saveData();
+        };
+        
+        if(fileInput.files.length > 0) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let base64 = e.target.result.split(',')[1] || '';
+                processRequest(base64);
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            processRequest(null);
+        }
+    }
+
+    function renderRequestsTable() {
+        let filterEmp = document.getElementById('filterEmployee').value;
+        let filterDate = document.getElementById('filterDate').value;
+        
+        let filtered = requests.filter(r => {
+            if(filterEmp !== 'all' && r.employee !== filterEmp) return false;
+            if(filterDate && r.startDate !== filterDate) return false;
+            return true;
+        });
+        
+        let tbody = document.getElementById('requestsTableBody');
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد طلبات</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = '';
+        filtered.forEach(req => {
+            let row = tbody.insertRow();
+            row.insertCell(0).innerText = req.id;
+            row.insertCell(1).innerText = req.employee;
+            row.insertCell(2).innerText = req.type;
+            row.insertCell(3).innerText = req.startDate;
+            row.insertCell(4).innerText = req.days;
+            
+            let attachCell = row.insertCell(5);
+            if(req.attachment) attachCell.innerHTML = `<i class="fas fa-paperclip attachment-link" style="cursor:pointer;" onclick="alert('مرفق موجود للطلب #${req.id}')"></i>`;
+            else attachCell.innerHTML = '-';
+            
+            let statusCell = row.insertCell(6);
+            let cls = req.status === 'pending' ? 'status-pending' : (req.status === 'approved' ? 'status-approved' : 'status-rejected');
+            let txt = req.status === 'pending' ? 'قيد الانتظار' : (req.status === 'approved' ? 'موافق' : 'مرفوض');
+            statusCell.innerHTML = `<span class="status-badge ${cls}">${txt}</span>`;
+            
+            let actionCell = row.insertCell(7);
+            if(req.status === 'pending') {
+                actionCell.innerHTML = `
+                    <div class="action-btns">
+                        <button class="btn-sm btn-success-sm" onclick="approveRequestById(${req.id})">قبول</button>
+                        <button class="btn-sm btn-danger-sm" onclick="rejectRequestById(${req.id})">رفض</button>
+                    </div>`;
+            } else {
+                actionCell.innerHTML = req.status === 'approved' ? '✔ معتمد' : '✘ مرفوض';
+            }
+        });
+        
+        let select = document.getElementById('approvalRequestSelect');
+        let pendingReqs = requests.filter(r => r.status === 'pending');
+        select.innerHTML = '<option value="">-- اختر طلب --</option>';
+        pendingReqs.forEach(r => {
+            select.innerHTML += `<option value="${r.id}">#${r.id} - ${r.employee} (${r.type})</option>`;
+        });
+    }
+
+    function updateBalancePreview() {
+        let emp = document.getElementById('employeeSelect').value;
+        if(emp && employeesBalance[emp]) {
+            let rem = getRemainingBalance(emp);
+            let used = employeesBalance[emp]?.used || 0;
+            document.getElementById('balancePreview').innerHTML = `<i class="fas fa-coins"></i> ${emp} : الرصيد المتاح ${rem} / ${employeesBalance[emp].totalAnnual} يوم (مستخدم ${used})`;
+        } else {
+            document.getElementById('balancePreview').innerHTML = `<i class="fas fa-chart-line"></i> اختر موظفاً لعرض الرصيد`;
+        }
+    }
+
+    // دوال الروابط
+    function showGeneratedLink() {
+        let emp = document.getElementById('shareEmployeeSelect').value;
+        if(!emp) { alert("اختر موظفاً أولاً"); return; }
+        let link = generatePermanentLink(emp);
+        document.getElementById('generatedLinkBox').innerHTML = `<i class="fas fa-link"></i> الرابط الدائم للموظف <strong>${emp}</strong>:<br><span style="font-size:0.65rem; word-break:break-all;">${link}</span>`;
+        addLog(`🔗 تم إنشاء رابط دائم للموظف ${emp}`);
+    }
+
+    function copyGeneratedLink() {
+        let emp = document.getElementById('shareEmployeeSelect').value;
+        if(!emp) { alert("اختر موظفاً أولاً"); return; }
+        let link = generatePermanentLink(emp);
+        navigator.clipboard.writeText(link);
+        alert("✅ تم نسخ الرابط الدائم");
+        addLog(`📋 تم نسخ رابط ${emp}`);
+    }
+
+    function shareLinkOnWhatsApp() {
+        let emp = document.getElementById('shareEmployeeSelect').value;
+        if(!emp) { alert("اختر موظفاً أولاً"); return; }
+        let link = generatePermanentLink(emp);
+        let msg = `📋 شركة MMC - نظام الإجازات\nمرحباً ${emp}، هذا رابطك الدائم لتقديم طلبات الإجازة ومتابعة رصيدك:\n${link}\nيمكنك أيضاً تعديل أو حذف طلباتك المعلقة من خلال البوابة.`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        addLog(`📱 تم مشاركة رابط ${emp} عبر واتساب`);
+    }
+
+    function exportToExcel() {
+        let data = requests.map(r => ({
+            'ID': r.id, 'الموظف': r.employee, 'النوع': r.type,
+            'تاريخ البدء': r.startDate, 'عدد الأيام': r.days,
+            'الحالة': r.status === 'pending' ? 'قيد الانتظار' : (r.status === 'approved' ? 'موافق' : 'مرفوض')
+        }));
+        let ws = XLSX.utils.json_to_sheet(data);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'طلبات_الإجازات');
+        XLSX.writeFile(wb, `MMC_Requests_${new Date().toISOString().slice(0,19)}.xlsx`);
+        addLog("📎 تم تصدير البيانات إلى Excel");
+    }
+
+    // ===================== ربط الأحداث =====================
+    function bindEvents() {
+        document.getElementById('addEmployeeBtn').addEventListener('click', addNewEmployee);
+        document.getElementById('submitRequestBtn').addEventListener('click', addNewRequest);
+        document.getElementById('resetFilterBtn').addEventListener('click', () => {
+            document.getElementById('filterEmployee').value = 'all';
+            document.getElementById('filterDate').value = '';
+            renderRequestsTable();
+        });
+        document.getElementById('filterEmployee').addEventListener('change', () => renderRequestsTable());
+        document.getElementById('filterDate').addEventListener('change', () => renderRequestsTable());
+        document.getElementById('employeeSelect').addEventListener('change', () => updateBalancePreview());
+        document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+        document.getElementById('approveBtn').addEventListener('click', () => {
+            let id = document.getElementById('approvalRequestSelect').value;
+            if(id) approveRequestById(parseInt(id));
+            else alert("اختر طلباً أولاً");
+        });
+        document.getElementById('rejectBtn').addEventListener('click', () => {
+            let id = document.getElementById('approvalRequestSelect').value;
+            if(id) rejectRequestById(parseInt(id));
+            else alert("اختر طلباً أولاً");
+        });
+        document.getElementById('generateLinkBtn').addEventListener('click', showGeneratedLink);
+        document.getElementById('copyLinkBtn').addEventListener('click', copyGeneratedLink);
+        document.getElementById('whatsappShareBtn').addEventListener('click', shareLinkOnWhatsApp);
+    }
+
+    window.approveRequestById = approveRequestById;
+    window.rejectRequestById = rejectRequestById;
+
+    function init() {
+        loadData();
+        updateAllEmployeeSelects();
+        renderRequestsTable();
+        renderLog();
+        bindEvents();
+        checkUrlForToken();
+    }
+    
+    init();
+</script>
+</body>
+</html>
