@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>MMC | نظام إدارة الإجازات المتكامل - نسخة نهائية</title>
+    <title>MMC | نظام إدارة الإجازات المتكامل - النسخة النهائية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -12,7 +12,6 @@
         body { background: linear-gradient(145deg, #eef2f9 0%, #e0e8f2 100%); min-height: 100vh; padding: 30px 20px; }
         .app-container { max-width: 1600px; margin: 0 auto; }
         
-        /* شاشة تسجيل الدخول */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; }
         .login-box { background: white; padding: 40px; border-radius: 40px; width: 90%; max-width: 400px; text-align: center; }
         .login-box input { margin: 15px 0; }
@@ -60,8 +59,9 @@
         .employee-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
         .delete-emp { color: #dc3545; cursor: pointer; background: none; border: none; width: auto; padding: 0 8px; }
         footer { text-align: center; margin-top: 40px; font-size: 0.8rem; color: #4a627a; }
-        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .auto-save-badge { background: #28a745; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; }
+        .success-msg { background: #d4edda; color: #155724; padding: 10px; border-radius: 20px; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -76,17 +76,16 @@
         </div>
     </div>
 
-    <!-- لوحة المدير -->
     <div id="adminPanel" class="dashboard-grid">
-        <!-- إضافة موظف جديد -->
         <div class="card admin-only">
             <div class="card-header"><i class="fas fa-user-plus"></i> إضافة موظف جديد</div>
             <div class="card-body">
                 <div class="form-group"><label>اسم الموظف الجديد</label><input type="text" id="newEmployeeName" placeholder="مثال: منى عبدالله"></div>
                 <div class="form-group"><label>كلمة المرور (للموظف)</label><input type="text" id="newEmployeePassword" value="123" placeholder="كلمة المرور"></div>
                 <button id="addEmployeeBtn" class="btn-add"><i class="fas fa-plus"></i> إضافة موظف</button>
-                <div class="employee-list" id="employeeList">
-                    <strong>قائمة الموظفين:</strong>
+                <div id="addEmployeeMsg"></div>
+                <div class="employee-list" style="margin-top:15px;">
+                    <strong>📋 قائمة الموظفين:</strong>
                     <div id="employeesListContainer"></div>
                 </div>
             </div>
@@ -97,7 +96,8 @@
             <div class="card-body">
                 <div class="form-group"><label>الموظف</label><select id="employeeSelect"></select></div>
                 <div class="form-group"><label>نوع الإجازة</label><select id="leaveType">
-                    <option value="سنوية">سنوية</option><option value="مرضية">مرضية</option><option value="طارئة">طارئة</option><option value="مامورية">مامورية</option>
+                    <option value="سنوية">سنوية</option><option value="مرضية">مرضية</option>
+                    <option value="طارئة">طارئة</option><option value="مامورية">مامورية</option>
                 </select></div>
                 <div class="form-group"><label>تاريخ البدء</label><input type="date" id="startDate"></div>
                 <div class="form-group"><label>عدد الأيام</label><input type="number" id="daysCount" min="1" value="1"></div>
@@ -132,7 +132,6 @@
         </div>
     </div>
 
-    <!-- جدول الطلبات -->
     <div class="requests-section">
         <div class="filter-bar">
             <div class="filter-group">
@@ -154,7 +153,7 @@
              
         </div>
     </div>
-    <footer>MMC | نظام متكامل - إضافة موظفين - طلب إجازة من بوابة الموظف - حفظ تلقائي</footer>
+    <footer>MMC | نظام متكامل - إضافة موظفين - الموظف يقدم طلباته من بوابته الشخصية - حفظ تلقائي</footer>
 </div>
 
 <script>
@@ -172,11 +171,7 @@
 
     // ===================== الحفظ التلقائي =====================
     function saveToLocalStorage() {
-        let data = {
-            requests: requests,
-            employees: employees,
-            log: operationLog.slice(0, 50)
-        };
+        let data = { requests: requests, employees: employees, log: operationLog.slice(0, 50) };
         localStorage.setItem('MMC_LeavesSystem', JSON.stringify(data));
     }
 
@@ -230,7 +225,7 @@
         }
     }
 
-    // تحديث قائمة الموظفين في جميع القوائم المنسدلة
+    // تحديث جميع القوائم المنسدلة
     function updateAllEmployeeDropdowns() {
         let employeeNames = Object.keys(employees);
         let selects = ['employeeSelect', 'shareEmployeeSelect', 'filterEmployee'];
@@ -250,13 +245,12 @@
             }
         });
         
-        // تحديث قائمة الموظفين المعروضة
         let container = document.getElementById('employeesListContainer');
         if(container) {
             container.innerHTML = employeeNames.map(emp => `
                 <div class="employee-item">
-                    <span><i class="fas fa-user"></i> ${emp} (رصيد: ${getRemainingBalance(emp)}/30)</span>
-                    <button class="delete-emp" onclick="deleteEmployee('${emp}')" title="حذف الموظف"><i class="fas fa-trash"></i></button>
+                    <span><i class="fas fa-user"></i> ${emp} (الرصيد: ${getRemainingBalance(emp)}/30)</span>
+                    <button class="delete-emp" onclick="deleteEmployee('${emp}')" title="حذف"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         }
@@ -281,16 +275,31 @@
     function addNewEmployee() {
         let name = document.getElementById('newEmployeeName').value.trim();
         let password = document.getElementById('newEmployeePassword').value.trim();
-        if(!name) { alert("الرجاء إدخال اسم الموظف"); return; }
-        if(employees[name]) { alert("هذا الموظف موجود بالفعل"); return; }
+        let msgDiv = document.getElementById('addEmployeeMsg');
+        
+        if(!name) { msgDiv.innerHTML = '<div class="success-msg" style="background:#f8d7da; color:#721c24;">❌ الرجاء إدخال اسم الموظف</div>'; return; }
+        if(employees[name]) { msgDiv.innerHTML = '<div class="success-msg" style="background:#f8d7da; color:#721c24;">❌ هذا الموظف موجود بالفعل</div>'; return; }
         if(!password) password = "123";
+        
         employees[name] = { password: password, totalAnnual: 30, used: 0, role: "employee" };
         updateAllEmployeeDropdowns();
         document.getElementById('newEmployeeName').value = '';
         addLog(`➕ تم إضافة موظف جديد: ${name}`);
         saveToLocalStorage();
-        alert(`✅ تم إضافة الموظف ${name} بنجاح\nكلمة المرور: ${password}`);
+        
+        // إنشاء رابط للموظف الجديد وعرضه
+        let link = generatePermanentLink(name);
+        msgDiv.innerHTML = `<div class="success-msg">✅ تم إضافة الموظف ${name} بنجاح!<br>
+        🔑 كلمة المرور: ${password}<br>
+        🔗 الرابط الدائم: <span style="font-size:0.7rem; word-break:break-all;">${link}</span><br>
+        <button onclick="copyText('${link}')" style="margin-top:8px; width:auto; padding:5px 15px; background:#2c7da0;">📋 نسخ الرابط</button>
+        <button onclick="shareOnWhatsApp('${name}', '${link}')" style="margin-top:8px; width:auto; padding:5px 15px; background:#25D366;">📱 إرسال واتساب</button></div>`;
+        
+        setTimeout(() => { msgDiv.innerHTML = ''; }, 8000);
     }
+    
+    window.copyText = function(text) { navigator.clipboard.writeText(text); alert("تم نسخ الرابط"); };
+    window.shareOnWhatsApp = function(name, link) { window.open(`https://wa.me/?text=${encodeURIComponent(`مرحباً ${name}، هذا رابطك لتقديم طلبات الإجازة:\n${link}`)}`, '_blank'); };
 
     // ===================== الرابط الدائم =====================
     function generatePermanentLink(employeeName) {
@@ -299,7 +308,7 @@
         return `${baseUrl}?token=${encoded}`;
     }
 
-    // بوابة الموظف - يمكنه تقديم طلب إجازة مباشرة
+    // بوابة الموظف - يمكنه تقديم طلب إجازة
     function openEmployeePortal(employeeName) {
         let existing = document.getElementById('employeePortal');
         if(existing) existing.remove();
@@ -328,7 +337,7 @@
                         </div>
                         <div class="form-group"><label>تاريخ البدء</label><input type="date" id="portalStartDate"></div>
                         <div class="form-group"><label>عدد الأيام</label><input type="number" id="portalDaysCount" min="1" value="1"></div>
-                        <div class="form-group"><label>المرفق</label><input type="file" id="portalAttachment" accept="image/*,application/pdf"></div>
+                        <div class="form-group"><label>المرفق (اختياري)</label><input type="file" id="portalAttachment" accept="image/*,application/pdf"></div>
                         <button id="portalSubmitBtn" style="background:#2c7da0;"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
                     </div>
                 </div>
@@ -343,7 +352,6 @@
         document.body.appendChild(modal);
         modal.style.display = 'flex';
         
-        // عرض طلبات الموظف
         function refreshEmployeeRequests() {
             let myReqs = requests.filter(r => r.employee === employeeName);
             let listHtml = myReqs.length === 0 ? '<p>لا توجد طلبات سابقة</p>' : 
@@ -359,7 +367,6 @@
         
         refreshEmployeeRequests();
         
-        // تقديم طلب من بوابة الموظف
         document.getElementById('portalSubmitBtn').onclick = () => {
             let type = document.getElementById('portalLeaveType').value;
             let startDate = document.getElementById('portalStartDate').value;
@@ -422,6 +429,8 @@
                 if(employees[employeeName]) {
                     openEmployeePortal(employeeName);
                     window.history.replaceState({}, document.title, window.location.pathname);
+                } else {
+                    alert("⚠️ الموظف غير موجود في النظام. يرجى التواصل مع المدير.");
                 }
             } catch(e) { console.error(e); }
         }
@@ -578,7 +587,7 @@
     function showGeneratedLink() {
         let emp = document.getElementById('shareEmployeeSelect').value;
         let link = generatePermanentLink(emp);
-        document.getElementById('generatedLinkBox').innerHTML = `<i class="fas fa-link"></i> رابط <strong>${emp}</strong>:<br><span style="font-size:0.65rem;">${link}</span>`;
+        document.getElementById('generatedLinkBox').innerHTML = `<i class="fas fa-link"></i> رابط <strong>${emp}</strong>:<br><span style="font-size:0.65rem; word-break:break-all;">${link}</span>`;
         addLog(`🔗 تم إنشاء رابط للموظف ${emp}`);
     }
 
@@ -593,7 +602,7 @@
     function shareLinkOnWhatsApp() {
         let emp = document.getElementById('shareEmployeeSelect').value;
         let link = generatePermanentLink(emp);
-        let msg = `📋 شركة MMC - نظام الإجازات\nمرحباً ${emp}، هذا رابطك الدائم لتقديم طلبات الإجازة:\n${link}`;
+        let msg = `📋 شركة MMC - نظام الإجازات\nمرحباً ${emp}، هذا رابطك الدائم لتقديم طلبات الإجازة ومتابعة رصيدك:\n${link}\n\n🔑 كلمة المرور: ${employees[emp]?.password || "123"}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         addLog(`📱 تم مشاركة رابط ${emp} عبر واتساب`);
     }
@@ -611,9 +620,9 @@
                 <div class="form-group"><label>كلمة المرور</label><input type="password" id="loginPassword" placeholder="كلمة المرور"></div>
                 <button id="loginBtn">تسجيل الدخول</button>
                 <div class="balance-box" style="margin-top: 20px; font-size: 0.7rem;">
-                    <strong>المدير:</strong> admin / admin123<br>
-                    <strong>موظف:</strong> أحمد حسن / 123<br>
-                    <i class="fas fa-shield-alt"></i> الموظف يمكنه تقديم طلباته من بوابته
+                    <strong>🔐 المدير:</strong> admin / admin123<br>
+                    <strong>👤 الموظفين:</strong> أحمد حسن / 123 (وكذلك أي موظف جديد)<br>
+                    <i class="fas fa-shield-alt"></i> الموظف يمكنه تقديم طلباته من بوابته الشخصية
                 </div>
             </div>
         `;
@@ -634,7 +643,8 @@
                 updateAllEmployeeDropdowns();
                 renderRequestsTable();
                 updateBalancePreview();
-            } else if(employees[username] && employees[username].password === password) {
+            } 
+            else if(employees[username] && employees[username].password === password) {
                 currentUser = { name: username, role: 'employee' };
                 document.getElementById('userRoleBadge').innerHTML = `<i class="fas fa-user"></i> موظف: ${username}`;
                 document.getElementById('loginScreen').remove();
@@ -644,8 +654,10 @@
                 addLog(`🔐 تسجيل دخول الموظف: ${username}`);
                 updateAllEmployeeDropdowns();
                 renderRequestsTable();
-            } else {
-                alert("اسم المستخدم أو كلمة المرور غير صحيحة");
+                alert(`مرحباً ${username}\nيمكنك الآن:\n1. عرض طلباتك السابقة\n2. تقديم طلب إجازة جديد من القائمة العلوية (اختر تقديم طلب)`);
+            }
+            else {
+                alert("❌ اسم المستخدم أو كلمة المرور غير صحيحة\nللموظفين الجدد: استخدم الاسم وكلمة المرور التي أعطاك إياها المدير");
             }
         });
     }
