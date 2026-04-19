@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الإجازات MMC - تسجيل الدخول</title>
+    <title>نظام الإجازات - تسجيل الدخول</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
         }
 
         body {
@@ -90,18 +90,26 @@
             display: none;
         }
 
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            color: #667eea;
+        }
+
         .demo-credentials {
             margin-top: 20px;
             padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">🏢</div>
-        <h1>نظام الإجازات والمأموريات</h1>
+        <h1>نظام الإجازات</h1>
         
         <form id="loginForm">
             <div class="form-group">
@@ -117,6 +125,7 @@
             <button type="submit">تسجيل الدخول</button>
         </form>
         
+        <div class="loading" id="loading">جاري تسجيل الدخول...</div>
         <div class="error-message" id="errorMessage"></div>
         
         <div class="demo-credentials">
@@ -136,12 +145,31 @@
 
         const loginForm = document.getElementById('loginForm')
         const errorMessage = document.getElementById('errorMessage')
+        const loading = document.getElementById('loading')
+
+        // التحقق من وجود جلسة سابقة
+        const savedUser = localStorage.getItem('currentUser')
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser)
+                if (user.role === 'admin') {
+                    window.location.href = 'admin.html'
+                } else {
+                    window.location.href = 'employee.html'
+                }
+            } catch (e) {
+                localStorage.removeItem('currentUser')
+            }
+        }
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault()
             
             const username = document.getElementById('username').value
             const password = document.getElementById('password').value
+            
+            loading.style.display = 'block'
+            errorMessage.style.display = 'none'
             
             try {
                 const { data, error } = await supabase
@@ -166,14 +194,9 @@
             } catch (error) {
                 errorMessage.textContent = error.message
                 errorMessage.style.display = 'block'
+                loading.style.display = 'none'
             }
         })
-
-        const savedUser = localStorage.getItem('currentUser')
-        if (savedUser) {
-            const user = JSON.parse(savedUser)
-            window.location.href = user.role === 'admin' ? 'admin.html' : 'employee.html'
-        }
     </script>
 </body>
 </html>
