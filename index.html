@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>MMC | نظام إدارة الإجازات - نسخة سريعة</title>
+    <title>MMC | نظام الإجازات - نسخة سريعة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Firebase CDN (أسرع) -->
+    <!-- Firebase Compatibility CDN (أسرع) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     
@@ -16,11 +16,10 @@
         body { background: linear-gradient(145deg, #eef2f9 0%, #e0e8f2 100%); min-height: 100vh; padding: 30px 20px; }
         .app-container { max-width: 1400px; margin: 0 auto; }
         
-        /* شاشة التحميل */
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; flex-direction: column; }
-        .loading-spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #2c7da0; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .loading-spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #2c7da0; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { color: white; font-size: 1.2rem; }
+        .loading-text { color: white; font-size: 1.2rem; background: #2c7da0; padding: 10px 20px; border-radius: 30px; }
         
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; }
         .login-box { background: white; padding: 40px; border-radius: 40px; width: 90%; max-width: 400px; text-align: center; }
@@ -40,7 +39,7 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: 600; margin-bottom: 8px; color: #1e2f3e; }
         select, input, button { width: 100%; padding: 12px 16px; border-radius: 28px; border: 1px solid #cfdfed; font-size: 0.95rem; background: white; outline: none; }
-        button { background: #2c7da0; color: white; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
+        button { background: #2c7da0; color: white; font-weight: 700; border: none; cursor: pointer; }
         button:hover { background: #1f5e7e; }
         .btn-outline { background: #eef2f9; color: #1f5e7e; border: 1px solid #cbdbe2; }
         .btn-whatsapp { background: #25D366; }
@@ -64,7 +63,7 @@
         .log-panel { max-height: 200px; overflow-y: auto; background: #f9fafc; border-radius: 24px; padding: 12px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
         
         .request-form-card { background: linear-gradient(135deg, #e8f4f8 0%, #d4eaf1 100%); border-radius: 32px; padding: 25px; margin: 20px 0; border: 2px solid #2c7da0; }
-        .request-form-card h3 { color: #1a2c3e; margin-bottom: 20px; text-align: center; }
+        .request-form-card h3 { color: #1a2c3e; margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
         .btn-submit { background: #28a745; font-size: 1.1rem; padding: 14px; border-radius: 50px; margin-top: 10px; }
         
         .employee-list { max-height: 200px; overflow-y: auto; border: 1px solid #cfdfed; border-radius: 20px; padding: 10px; margin-top: 10px; }
@@ -74,25 +73,27 @@
         .filter-bar { display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; margin-bottom: 25px; align-items: center; }
         footer { text-align: center; margin-top: 40px; font-size: 0.8rem; color: #4a627a; }
         .user-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .success-msg { background: #d4edda; color: #155724; padding: 10px; border-radius: 20px; margin-top: 10px; text-align: center; }
         .welcome-banner { background: linear-gradient(135deg, #2c7da0, #1a5a7a); color: white; padding: 20px; border-radius: 30px; margin-bottom: 25px; text-align: center; }
         .firebase-badge { background: #FFA000; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; margin-right: 10px; }
+        .success-msg { background: #d4edda; color: #155724; padding: 10px; border-radius: 20px; margin-top: 10px; text-align: center; }
+        .error-msg { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 20px; margin-top: 10px; text-align: center; }
         
-        /* رسالة التحميل الصغيرة */
-        .small-loading { display: inline-block; width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #2c7da0; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
+        /* مؤشر تحميل صغير للأزرار */
+        .btn-loading { opacity: 0.6; pointer-events: none; position: relative; }
+        .btn-loading::after { content: " ⏳"; }
     </style>
 </head>
 <body>
 
-<!-- شاشة تحميل خلفية -->
-<div id="loadingOverlay" class="loading-overlay">
+<!-- شاشة التحميل -->
+<div id="loadingScreen" class="loading-overlay">
     <div class="loading-spinner"></div>
-    <div class="loading-text">⏳ جاري التحميل...</div>
+    <div class="loading-text">⏳ جاري تحميل النظام...</div>
 </div>
 
 <div class="app-container" id="appContainer" style="display: none;">
     <div class="company-header">
-        <h1><i class="fas fa-cloud"></i> MMC | نظام الإجازات <span class="firebase-badge"><i class="fas fa-database"></i> Firebase</span></h1>
+        <h1><i class="fas fa-cloud"></i> MMC | نظام الإجازات <span class="firebase-badge"><i class="fas fa-bolt"></i> سريع</span></h1>
         <div class="user-info">
             <span class="badge-system" id="userRoleBadge"></span>
             <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
@@ -110,7 +111,7 @@
                     <div id="addEmployeeMsg"></div>
                     <div class="employee-list">
                         <strong>📋 قائمة الموظفين:</strong>
-                        <div id="employeesListContainer"></div>
+                        <div id="employeesListContainer">جاري التحميل...</div>
                     </div>
                 </div>
             </div>
@@ -131,7 +132,7 @@
             </div>
 
             <div class="card">
-                <div class="card-header"><i class="fas fa-link"></i> روابط دائمة للموظفين</div>
+                <div class="card-header"><i class="fas fa-link"></i> روابط دائمة</div>
                 <div class="card-body">
                     <div class="form-group"><label>اختر الموظف</label><select id="shareEmployeeSelect"></select></div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -152,7 +153,7 @@
                         <button id="bulkRejectBtn" style="background:#dc3545;">رفض جماعي</button>
                     </div>
                     <button id="exportExcelBtn" class="btn-excel"><i class="fas fa-file-excel"></i> تصدير Excel</button>
-                    <div class="log-panel" id="logPanel" style="margin-top: 15px;"><div class="log-entry">✨ سجل العمليات - نسخة سريعة</div></div>
+                    <div class="log-panel" id="logPanel"><div class="log-entry">✨ سجل العمليات</div></div>
                     <button id="clearLogBtn" class="btn-outline" style="margin-top: 8px;">مسح السجل</button>
                 </div>
             </div>
@@ -165,39 +166,33 @@
             <h2 id="employeeNameTitle">مرحباً</h2>
             <p>يمكنك تقديم طلبات الإجازة ومتابعة طلباتك</p>
         </div>
-
         <div class="request-form-card">
-            <h3><i class="fas fa-calendar-plus"></i> ✨ تقديم طلب إجازة جديد ✨</h3>
-            <div class="form-group">
-                <label><i class="fas fa-tag"></i> نوع الإجازة</label>
-                <select id="empLeaveType">
-                    <option value="سنوية">🌴 سنوية</option><option value="مرضية">🏥 مرضية</option>
-                    <option value="طارئة">⚠️ طارئة</option><option value="مامورية">📋 مأمورية</option>
-                </select>
-            </div>
-            <div class="form-group"><label><i class="fas fa-calendar-day"></i> تاريخ البدء</label><input type="date" id="empStartDate"></div>
-            <div class="form-group"><label><i class="fas fa-clock"></i> عدد الأيام</label><input type="number" id="empDaysCount" min="0.5" step="0.5" value="1"></div>
+            <h3>✨ تقديم طلب إجازة جديد ✨</h3>
+            <div class="form-group"><label>نوع الإجازة</label><select id="empLeaveType">
+                <option value="سنوية">🌴 سنوية</option><option value="مرضية">🏥 مرضية</option>
+                <option value="طارئة">⚠️ طارئة</option><option value="مامورية">📋 مأمورية</option>
+            </select></div>
+            <div class="form-group"><label>تاريخ البدء</label><input type="date" id="empStartDate"></div>
+            <div class="form-group"><label>عدد الأيام</label><input type="number" id="empDaysCount" min="0.5" step="0.5" value="1"></div>
             <button id="empSubmitRequestBtn" class="btn-submit"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
         </div>
-
         <div class="balance-box" id="empBalanceBox">جاري تحميل الرصيد...</div>
-
         <div class="requests-section">
-            <h3><i class="fas fa-history"></i> 📋 طلباتي السابقة</h3>
+            <h3>📋 طلباتي السابقة</h3>
             <div style="overflow-x: auto;">
                 <table id="empRequestsTable">
                     <thead><th>ID</th><th>النوع</th><th>تاريخ البدء</th><th>الأيام</th><th>الحالة</th></thead>
-                    <tbody id="empRequestsTableBody"><td><td colspan="5">جاري التحميل...<span class="small-loading"></span></td></tr></tbody>
+                    <tbody id="empRequestsTableBody"><tr><td colspan="5">جاري التحميل...</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <footer>MMC | نظام إدارة الإجازات - نسخة سريعة ⚡ | يعمل على Firebase Cloud</footer>
+    <footer>MMC | نظام إدارة الإجازات - نسخة سريعة مع تحسين الأداء ⚡</footer>
 </div>
 
 <script>
-    // ===================== تهيئة Firebase =====================
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCUPrHkAzuRIQYQ8tHOmAUNZIRWaLarsQI",
         authDomain: "mmc-holidya.firebaseapp.com",
@@ -207,24 +202,28 @@
         appId: "1:552961282271:web:a2f4518a9871b8c0ed196a"
     };
     
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     
-    // ===================== المتغيرات =====================
+    // المتغيرات
     let requests = [];
     let employees = {};
     let operationLog = [];
     let currentUser = null;
+    let isLoading = false;
     
-    // ===================== دوال مساعدة =====================
-    function showLoading(show) {
-        document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+    // إخفاء شاشة التحميل
+    function hideLoading() {
+        const loading = document.getElementById('loadingScreen');
+        if(loading) loading.style.display = 'none';
     }
     
     function addLog(msg) {
         operationLog.unshift({ time: new Date().toLocaleString('ar-EG'), text: msg });
         const panel = document.getElementById('logPanel');
         if(panel) panel.innerHTML = operationLog.map(l=>`<div class="log-entry">[${l.time}] ${l.text}</div>`).join('');
+        if(operationLog.length > 50) operationLog.pop();
     }
     
     function getRemainingBalance(emp) {
@@ -243,7 +242,7 @@
         });
     }
     
-    // ===================== تحميل البيانات (مع loading خفيف) =====================
+    // تحميل الموظفين
     async function loadEmployees() {
         try {
             employees = {};
@@ -254,202 +253,34 @@
             });
             updateAllEmployeeDropdowns();
             addLog(`📋 تم تحميل ${Object.keys(employees).length} موظف`);
-        } catch(e) { console.error(e); addLog("❌ خطأ في تحميل الموظفين"); }
+            return true;
+        } catch(e) { 
+            console.error(e); 
+            addLog(`❌ خطأ في تحميل الموظفين: ${e.message}`);
+            return false; 
+        }
     }
     
+    // تحميل الطلبات
     async function loadRequests() {
         try {
             requests = [];
-            // استخدام limit لتحسين الأداء
-            const snapshot = await db.collection("requests").limit(100).get();
+            const snapshot = await db.collection("requests").orderBy("startDate", "desc").limit(100).get();
             snapshot.forEach(doc => {
                 let data = doc.data();
                 requests.push({ id: doc.id, ...data });
             });
             recalcUsedBalance();
             addLog(`📋 تم تحميل ${requests.length} طلب`);
-        } catch(e) { console.error(e); addLog("❌ خطأ في تحميل الطلبات"); }
-    }
-    
-    // ===================== إضافة موظف =====================
-    async function addNewEmployee() {
-        let name = document.getElementById('newEmployeeName').value.trim();
-        let password = document.getElementById('newEmployeePassword').value.trim();
-        let msgDiv = document.getElementById('addEmployeeMsg');
-        
-        if(!name) { msgDiv.innerHTML = '<div class="success-msg" style="background:#f8d7da;">❌ أدخل اسم الموظف</div>'; return; }
-        if(employees[name]) { msgDiv.innerHTML = '<div class="success-msg" style="background:#f8d7da;">❌ موجود مسبقاً</div>'; return; }
-        if(!password) password = "123";
-        
-        showLoading(true);
-        try {
-            await db.collection("employees").add({ name, password, totalAnnual: 30, used: 0 });
-            await loadEmployees();
-            document.getElementById('newEmployeeName').value = '';
-            let link = generatePermanentLink(name);
-            msgDiv.innerHTML = `<div class="success-msg">✅ تم إضافة ${name}<br>🔗 <span style="font-size:0.7rem;">${link}</span><br><button onclick="copyText('${link}')" style="margin-top:5px;">📋 نسخ الرابط</button></div>`;
-            setTimeout(() => msgDiv.innerHTML = '', 5000);
-            addLog(`➕ تم إضافة موظف: ${name}`);
-        } catch(e) { msgDiv.innerHTML = '<div class="success-msg" style="background:#f8d7da;">❌ خطأ</div>'; }
-        finally { showLoading(false); }
-    }
-    
-    // ===================== إضافة طلب (للمدير) =====================
-    async function addNewRequest() {
-        if(currentUser?.role !== 'admin') return;
-        let employee = document.getElementById('employeeSelect').value;
-        let type = document.getElementById('leaveType').value;
-        let startDate = document.getElementById('startDate').value;
-        let days = parseInt(document.getElementById('daysCount').value);
-        
-        if(!startDate) { alert("حدد تاريخ"); return; }
-        
-        showLoading(true);
-        try {
-            await db.collection("requests").add({ employee, type, startDate, days, status: "pending" });
-            await loadRequests();
-            renderAdminTable();
-            updateBalancePreview();
-            document.getElementById('startDate').value = '';
-            alert("✅ تم إضافة الطلب");
-            addLog(`➕ إضافة طلب - ${employee}`);
-        } catch(e) { alert("خطأ"); }
-        finally { showLoading(false); }
-    }
-    
-    // ===================== الموافقة والرفض =====================
-    async function approveRequest(requestId) {
-        if(currentUser?.role !== 'admin') return;
-        let req = requests.find(r => r.id === requestId);
-        if(!req || req.status !== 'pending') return;
-        if(req.type === 'سنوية' && getRemainingBalance(req.employee) < req.days) {
-            alert(`❌ رصيد غير كافٍ`);
-            return;
-        }
-        showLoading(true);
-        try {
-            await db.collection("requests").doc(requestId).update({ status: "approved" });
-            await loadRequests();
-            renderAdminTable();
-            updateBalancePreview();
-            addLog(`✅ موافقة على الطلب`);
-        } catch(e) { alert("خطأ"); }
-        finally { showLoading(false); }
-    }
-    
-    async function rejectRequest(requestId) {
-        if(currentUser?.role !== 'admin') return;
-        showLoading(true);
-        try {
-            await db.collection("requests").doc(requestId).update({ status: "rejected" });
-            await loadRequests();
-            renderAdminTable();
-            addLog(`❌ رفض الطلب`);
-        } catch(e) { alert("خطأ"); }
-        finally { showLoading(false); }
-    }
-    
-    // ===================== حذف موظف =====================
-    window.deleteEmployee = async function(empName) {
-        if(currentUser?.role !== 'admin') return;
-        if(confirm(`حذف ${empName}؟`)) {
-            showLoading(true);
-            try {
-                let emp = employees[empName];
-                if(emp && emp.id) await db.collection("employees").doc(emp.id).delete();
-                let toDelete = requests.filter(r => r.employee === empName);
-                for(let req of toDelete) await db.collection("requests").doc(req.id).delete();
-                await loadEmployees();
-                await loadRequests();
-                renderAdminTable();
-                addLog(`🗑️ حذف ${empName}`);
-            } catch(e) { alert("خطأ"); }
-            finally { showLoading(false); }
-        }
-    };
-    
-    // ===================== تقديم طلب من الموظف =====================
-    async function submitEmployeeRequest() {
-        let type = document.getElementById('empLeaveType').value;
-        let startDate = document.getElementById('empStartDate').value;
-        let days = parseFloat(document.getElementById('empDaysCount').value);
-        
-        if(!startDate) { alert("حدد تاريخ"); return; }
-        
-        showLoading(true);
-        try {
-            await db.collection("requests").add({ employee: currentUser.name, type, startDate, days, status: "pending" });
-            await loadRequests();
-            renderEmployeeRequests();
-            let balance = getRemainingBalance(currentUser.name);
-            document.getElementById('empBalanceBox').innerHTML = `<i class="fas fa-chart-line"></i> رصيدك: ${balance} / 30 يوم`;
-            document.getElementById('empStartDate').value = '';
-            alert("✅ تم إرسال طلبك");
-            addLog(`📝 ${currentUser.name} قدم طلب`);
-        } catch(e) { alert("خطأ"); }
-        finally { showLoading(false); }
-    }
-    
-    // ===================== عرض الجداول =====================
-    function renderAdminTable() {
-        let filterEmp = document.getElementById('filterEmployee')?.value;
-        let filtered = requests;
-        if(filterEmp && filterEmp !== 'all') filtered = filtered.filter(r => r.employee === filterEmp);
-        
-        let tbody = document.getElementById('requestsTableBody');
-        if(!tbody) return;
-        
-        if(filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7">لا توجد طلبات</td></tr>'; return; }
-        
-        tbody.innerHTML = '';
-        filtered.forEach(req => {
-            let row = tbody.insertRow();
-            row.insertCell(0).innerText = req.id.substring(0,8);
-            row.insertCell(1).innerText = req.employee;
-            row.insertCell(2).innerText = req.type;
-            row.insertCell(3).innerText = req.startDate;
-            row.insertCell(4).innerText = req.days;
-            let cls = req.status === 'pending' ? 'status-pending' : (req.status === 'approved' ? 'status-approved' : 'status-rejected');
-            let txt = req.status === 'pending' ? 'قيد الانتظار' : (req.status === 'approved' ? 'موافق' : 'مرفوض');
-            row.insertCell(5).innerHTML = `<span class="status-badge ${cls}">${txt}</span>`;
-            let actionCell = row.insertCell(6);
-            if(req.status === 'pending') {
-                actionCell.innerHTML = `<button class="btn-sm btn-success-sm" onclick="approveRequest('${req.id}')">قبول</button><button class="btn-sm btn-danger-sm" onclick="rejectRequest('${req.id}')">رفض</button>`;
-            } else { actionCell.innerHTML = req.status === 'approved' ? '✔ معتمد' : '✘ مرفوض'; }
-        });
-        
-        let select = document.getElementById('approvalRequestSelect');
-        if(select) {
-            let pending = requests.filter(r => r.status === 'pending');
-            select.innerHTML = '<option value="">اختر طلب</option>';
-            pending.forEach(r => select.innerHTML += `<option value="${r.id}">${r.id.substring(0,8)} - ${r.employee}</option>`);
+            return true;
+        } catch(e) { 
+            console.error(e); 
+            addLog(`❌ خطأ في تحميل الطلبات: ${e.message}`);
+            return false; 
         }
     }
     
-    function renderEmployeeRequests() {
-        let myReqs = requests.filter(r => r.employee === currentUser.name);
-        let tbody = document.getElementById('empRequestsTableBody');
-        if(myReqs.length === 0) { tbody.innerHTML = '<tr><td colspan="5">لا توجد طلبات</td></tr>'; return; }
-        tbody.innerHTML = '';
-        myReqs.forEach(req => {
-            let row = tbody.insertRow();
-            row.insertCell(0).innerText = req.id.substring(0,8);
-            row.insertCell(1).innerText = req.type;
-            row.insertCell(2).innerText = req.startDate;
-            row.insertCell(3).innerText = req.days;
-            let cls = req.status === 'pending' ? 'status-pending' : (req.status === 'approved' ? 'status-approved' : 'status-rejected');
-            let txt = req.status === 'pending' ? '⏳ قيد الانتظار' : (req.status === 'approved' ? '✅ موافق' : '❌ مرفوض');
-            row.insertCell(4).innerHTML = `<span class="status-badge ${cls}">${txt}</span>`;
-        });
-    }
-    
-    function updateBalancePreview() {
-        let emp = document.getElementById('employeeSelect')?.value;
-        if(emp && employees[emp]) {
-            document.getElementById('balancePreview').innerHTML = `<i class="fas fa-coins"></i> ${emp} : الرصيد المتاح ${getRemainingBalance(emp)} / 30 يوم`;
-        }
-    }
-    
+    // تحديث جميع القوائم
     function updateAllEmployeeDropdowns() {
         let names = Object.keys(employees);
         let selects = ['employeeSelect', 'shareEmployeeSelect', 'filterEmployee'];
@@ -459,139 +290,80 @@
                 let old = sel.value;
                 sel.innerHTML = '';
                 if(id === 'filterEmployee') sel.innerHTML = '<option value="all">جميع الموظفين</option>';
-                names.forEach(n => { let opt = document.createElement('option'); opt.value = n; opt.textContent = n; sel.appendChild(opt); });
+                names.forEach(n => { 
+                    let opt = document.createElement('option'); 
+                    opt.value = n; 
+                    opt.textContent = n; 
+                    sel.appendChild(opt); 
+                });
                 if(old && names.includes(old)) sel.value = old;
             }
         });
         
         let container = document.getElementById('employeesListContainer');
         if(container) {
-            container.innerHTML = names.map(emp => `<div class="employee-item"><span>${emp} (${getRemainingBalance(emp)}/30)</span><button class="delete-emp" onclick="deleteEmployee('${emp}')"><i class="fas fa-trash"></i></button></div>`).join('');
+            if(names.length === 0) {
+                container.innerHTML = '<div style="padding:10px; text-align:center;">لا يوجد موظفين</div>';
+            } else {
+                container.innerHTML = names.map(emp => `
+                    <div class="employee-item">
+                        <span><i class="fas fa-user"></i> ${emp} (${getRemainingBalance(emp)}/30)</span>
+                        <button class="delete-emp" onclick="deleteEmployee('${emp}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                `).join('');
+            }
         }
     }
     
-    // ===================== الرابط الدائم =====================
-    function generatePermanentLink(emp) { return `${window.location.href.split('?')[0]}?token=${btoa(encodeURIComponent(emp))}`; }
-    window.copyText = (t) => { navigator.clipboard.writeText(t); alert("تم النسخ"); };
-    function showGeneratedLink() { let emp = document.getElementById('shareEmployeeSelect').value; let link = generatePermanentLink(emp); document.getElementById('generatedLinkBox').innerHTML = `<i class="fas fa-link"></i> رابط ${emp}:<br><span style="font-size:0.65rem;">${link}</span>`; }
-    function copyGeneratedLink() { let emp = document.getElementById('shareEmployeeSelect').value; navigator.clipboard.writeText(generatePermanentLink(emp)); alert("تم النسخ"); }
-    function shareLinkOnWhatsApp() { let emp = document.getElementById('shareEmployeeSelect').value; let link = generatePermanentLink(emp); window.open(`https://wa.me/?text=${encodeURIComponent(`رابط الإجازات ${emp}: ${link}`)}`, '_blank'); }
-    function bulkAction(action) { let targets = requests.filter(r => r.status === 'pending'); if(targets.length===0) return; if(confirm(`${action==='approve'?'موافقة':'رفض'} جماعي؟`)) targets.forEach(r => { if(action==='approve') approveRequest(r.id); else rejectRequest(r.id); }); }
-    function exportToExcel() { let data = requests.map(r=>({ID:r.id.substring(0,8),الموظف:r.employee,النوع:r.type,التاريخ:r.startDate,الأيام:r.days,الحالة:r.status})); let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"الطلبات"); XLSX.writeFile(wb,`MMC_Requests.xlsx`); addLog("📎 تصدير Excel"); }
-    
-    // ===================== واجهة الموظف =====================
-    function showEmployeeView() {
-        document.getElementById('adminPanel').style.display = 'none';
-        document.getElementById('employeeSection').style.display = 'block';
-        document.getElementById('userRoleBadge').innerHTML = `<i class="fas fa-user"></i> موظف: ${currentUser.name}`;
-        document.getElementById('employeeNameTitle').innerHTML = `مرحباً ${currentUser.name}`;
-        let balance = getRemainingBalance(currentUser.name);
-        document.getElementById('empBalanceBox').innerHTML = `<i class="fas fa-chart-line"></i> رصيدك: ${balance} / 30 يوم`;
-        renderEmployeeRequests();
-    }
-    
-    // ===================== تسجيل الدخول (يظهر فوراً) =====================
-    function showLoginScreen() {
-        let loginDiv = document.createElement('div');
-        loginDiv.className = 'login-overlay';
-        loginDiv.id = 'loginScreen';
-        loginDiv.innerHTML = `
-            <div class="login-box">
-                <i class="fas fa-cloud" style="font-size: 50px; color: #2c7da0;"></i>
-                <h2>MMC | نظام الإجازات</h2>
-                <p>☁️ نسخة سريعة ⚡</p>
-                <input type="text" id="loginUsername" placeholder="اسم المستخدم">
-                <input type="password" id="loginPassword" placeholder="كلمة المرور">
-                <button id="loginBtn">تسجيل الدخول</button>
-                <div style="margin-top:20px; font-size:0.7rem;">
-                    <strong>👑 مدير:</strong> admin / admin123<br>
-                    <strong>👤 موظف:</strong> اسم الموظف / 123
-                </div>
-            </div>
-        `;
-        document.body.appendChild(loginDiv);
+    // إضافة موظف جديد (مع تحديث فوري)
+    async function addNewEmployee() {
+        if(isLoading) return;
         
-        document.getElementById('loginBtn').onclick = async () => {
-            let username = document.getElementById('loginUsername').value;
-            let password = document.getElementById('loginPassword').value;
+        let name = document.getElementById('newEmployeeName').value.trim();
+        let password = document.getElementById('newEmployeePassword').value.trim();
+        let msgDiv = document.getElementById('addEmployeeMsg');
+        let btn = document.getElementById('addEmployeeBtn');
+        
+        if(!name) { 
+            msgDiv.innerHTML = '<div class="error-msg">❌ الرجاء إدخال اسم الموظف</div>';
+            setTimeout(() => msgDiv.innerHTML = '', 3000);
+            return; 
+        }
+        if(employees[name]) { 
+            msgDiv.innerHTML = '<div class="error-msg">❌ هذا الموظف موجود بالفعل</div>';
+            setTimeout(() => msgDiv.innerHTML = '', 3000);
+            return; 
+        }
+        if(!password) password = "123";
+        
+        // تعطيل الزر أثناء التحميل
+        isLoading = true;
+        btn.classList.add('btn-loading');
+        btn.disabled = true;
+        msgDiv.innerHTML = '<div class="success-msg">⏳ جاري إضافة الموظف...</div>';
+        
+        try {
+            await db.collection("employees").add({ 
+                name: name, 
+                password: password, 
+                totalAnnual: 30, 
+                used: 0 
+            });
             
-            if(username === 'admin' && password === 'admin123') {
-                currentUser = { name: 'admin', role: 'admin' };
-                document.getElementById('userRoleBadge').innerHTML = '<i class="fas fa-crown"></i> مدير';
-                document.getElementById('loginScreen').remove();
-                document.getElementById('appContainer').style.display = 'block';
-                await loadEmployees();
-                await loadRequests();
-                updateAllEmployeeDropdowns();
+            // إعادة تحميل البيانات
+            await loadEmployees();
+            
+            // تنظيف الحقول
+            document.getElementById('newEmployeeName').value = '';
+            
+            // إنشاء الرابط
+            let link = generatePermanentLink(name);
+            msgDiv.innerHTML = `<div class="success-msg">✅ تم إضافة الموظف ${name}<br>🔑 كلمة المرور: ${password}<br>🔗 الرابط: <span style="font-size:0.7rem;">${link}</span><br>
+            <button onclick="copyText('${link}')" style="margin-top:8px; width:auto; padding:5px 15px;">📋 نسخ الرابط</button></div>`;
+            
+            addLog(`➕ تم إضافة موظف جديد: ${name}`);
+            
+            // تحديث الجداول
+            if(currentUser?.role === 'admin') {
                 renderAdminTable();
-                updateBalancePreview();
-                addLog("🔐 دخول المدير");
-            } else if(employees[username] && employees[username].password === password) {
-                currentUser = { name: username, role: 'employee' };
-                document.getElementById('loginScreen').remove();
-                document.getElementById('appContainer').style.display = 'block';
-                await loadRequests();
-                showEmployeeView();
-                addLog(`🔐 دخول: ${username}`);
-            } else { alert("بيانات غير صحيحة"); }
-        };
-    }
-    
-    // ===================== رابط دائم =====================
-    function checkUrlForToken() {
-        let params = new URLSearchParams(window.location.search);
-        let token = params.get('token');
-        if(token) {
-            try {
-                let name = decodeURIComponent(atob(token));
-                if(employees[name]) {
-                    currentUser = { name: name, role: 'employee' };
-                    document.getElementById('appContainer').style.display = 'block';
-                    document.getElementById('loginScreen')?.remove();
-                    loadRequests().then(() => { showEmployeeView(); addLog(`🔗 رابط دائم: ${name}`); });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-            } catch(e) {}
-        }
-    }
-    
-    // ===================== ربط الأحداث =====================
-    function bindEvents() {
-        document.getElementById('addEmployeeBtn')?.addEventListener('click', addNewEmployee);
-        document.getElementById('submitRequestBtn')?.addEventListener('click', addNewRequest);
-        document.getElementById('resetFilterBtn')?.addEventListener('click', () => { document.getElementById('filterEmployee').value = 'all'; renderAdminTable(); });
-        document.getElementById('filterEmployee')?.addEventListener('change', () => renderAdminTable());
-        document.getElementById('employeeSelect')?.addEventListener('change', () => updateBalancePreview());
-        document.getElementById('bulkApproveBtn')?.addEventListener('click', () => bulkAction('approve'));
-        document.getElementById('bulkRejectBtn')?.addEventListener('click', () => bulkAction('reject'));
-        document.getElementById('exportExcelBtn')?.addEventListener('click', exportToExcel);
-        document.getElementById('clearLogBtn')?.addEventListener('click', () => { operationLog = []; addLog("مسح السجل"); });
-        document.getElementById('approveBtn')?.addEventListener('click', () => { let id = document.getElementById('approvalRequestSelect').value; if(id) approveRequest(id); });
-        document.getElementById('rejectBtn')?.addEventListener('click', () => { let id = document.getElementById('approvalRequestSelect').value; if(id) rejectRequest(id); });
-        document.getElementById('generateLinkBtn')?.addEventListener('click', showGeneratedLink);
-        document.getElementById('copyLinkBtn')?.addEventListener('click', copyGeneratedLink);
-        document.getElementById('whatsappShareBtn')?.addEventListener('click', shareLinkOnWhatsApp);
-        document.getElementById('logoutBtn')?.addEventListener('click', () => location.reload());
-        document.getElementById('empSubmitRequestBtn')?.addEventListener('click', submitEmployeeRequest);
-    }
-    
-    // ربط الدوال العالمية
-    window.approveRequest = approveRequest;
-    window.rejectRequest = rejectRequest;
-    window.deleteEmployee = deleteEmployee;
-    
-    // ===================== التهيئة (الأهم - تظهر شاشة الدخول فوراً) =====================
-    async function init() {
-        bindEvents();
-        showLoginScreen();        // 👈 تظهر فوراً بدون انتظار
-        
-        // تحميل البيانات في الخلفية (لا تمنع ظهور الشاشة)
-        loadEmployees();
-        loadRequests();
-        checkUrlForToken();
-    }
-    
-    init();
-</script>
-</body>
-</html>
+  
