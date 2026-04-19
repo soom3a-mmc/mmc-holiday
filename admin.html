@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة المدير - نظام الإجازات</title>
+    <title>لوحة المدير - الإجازات والمأموريات</title>
     <style>
         * {
             margin: 0;
@@ -31,11 +31,17 @@
             align-items: center;
         }
 
-        .logout-btn {
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-icon {
             background: rgba(255,255,255,0.2);
             color: white;
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             cursor: pointer;
         }
@@ -101,6 +107,14 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .requests-table {
@@ -129,16 +143,30 @@
         .status-approved { background: #d4edda; color: #155724; }
         .status-rejected { background: #f8d7da; color: #721c24; }
 
+        .badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            margin-right: 5px;
+        }
+
+        .badge-leave { background: #e3f2fd; color: #1976d2; }
+        .badge-mission { background: #f3e5f5; color: #7b1fa2; }
+
         .btn {
             padding: 8px 16px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             margin: 2px;
+            font-size: 14px;
         }
 
         .btn-success { background: #28a745; color: white; }
         .btn-danger { background: #dc3545; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-primary { background: #007bff; color: white; }
 
         .employee-card {
             border: 1px solid #e0e0e0;
@@ -148,6 +176,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .employee-info h3 {
+            margin-bottom: 5px;
+        }
+
+        .employee-stats {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .remaining-badge {
+            background: #28a745;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
         }
 
         .modal {
@@ -160,6 +207,7 @@
             background: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
 
         .modal-content {
@@ -179,11 +227,22 @@
             margin-bottom: 8px;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-bar select, .filter-bar input {
+            width: auto;
+            flex: 1;
         }
     </style>
 </head>
@@ -191,19 +250,22 @@
     <div class="header">
         <div class="header-content">
             <h1>👨‍💼 لوحة تحكم المدير</h1>
-            <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="user-menu">
                 <span id="userName"></span>
-                <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+                <button class="btn-icon" onclick="openChangePasswordModal()">🔐 تغيير كلمة المرور</button>
+                <button class="btn-icon" onclick="exportToExcel()">📊 تصدير Excel</button>
+                <button class="btn-icon" onclick="logout()">🚪 تسجيل الخروج</button>
             </div>
         </div>
     </div>
 
     <div class="container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('requests')">📋 الطلبات</button>
-            <button class="tab" onclick="switchTab('employees')">👥 الموظفين</button>
+            <button class="tab active" onclick="switchTab('requests')">📋 جميع الطلبات</button>
+            <button class="tab" onclick="switchTab('employees')">👥 إدارة الموظفين</button>
         </div>
 
+        <!-- تبويب الطلبات -->
         <div id="requestsTab" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -211,20 +273,43 @@
                     <div class="stat-value" id="totalRequests">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">معلقة</div>
+                    <div class="stat-label">طلبات معلقة</div>
                     <div class="stat-value" id="pendingRequests">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">إجازات</div>
+                    <div class="stat-value" id="leaveRequests">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">مأموريات</div>
+                    <div class="stat-value" id="missionRequests">0</div>
                 </div>
             </div>
 
             <div class="section">
-                <h2>جميع الطلبات</h2>
+                <div class="section-header">
+                    <h2>جميع الطلبات</h2>
+                    <div class="filter-bar">
+                        <select id="filterType" onchange="filterRequests()">
+                            <option value="all">الكل</option>
+                            <option value="leave">إجازات</option>
+                            <option value="mission">مأموريات</option>
+                        </select>
+                        <select id="filterStatus" onchange="filterRequests()">
+                            <option value="all">كل الحالات</option>
+                            <option value="pending">معلق</option>
+                            <option value="approved">مقبول</option>
+                            <option value="rejected">مرفوض</option>
+                        </select>
+                    </div>
+                </div>
                 <table class="requests-table">
                     <thead>
                         <tr>
                             <th>الموظف</th>
                             <th>النوع</th>
-                            <th>التاريخ</th>
-                            <th>الأيام</th>
+                            <th>التفاصيل</th>
+                            <th>التواريخ</th>
                             <th>الحالة</th>
                             <th>إجراءات</th>
                         </tr>
@@ -234,9 +319,10 @@
             </div>
         </div>
 
+        <!-- تبويب الموظفين -->
         <div id="employeesTab" class="tab-content">
             <div class="section">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <div class="section-header">
                     <h2>قائمة الموظفين</h2>
                     <button class="btn btn-success" onclick="openAddEmployeeModal()">➕ إضافة موظف</button>
                 </div>
@@ -245,6 +331,7 @@
         </div>
     </div>
 
+    <!-- Modal إضافة موظف -->
     <div id="addEmployeeModal" class="modal">
         <div class="modal-content">
             <h2>إضافة موظف جديد</h2>
@@ -267,6 +354,50 @@
         </div>
     </div>
 
+    <!-- Modal تعديل موظف -->
+    <div id="editEmployeeModal" class="modal">
+        <div class="modal-content">
+            <h2>تعديل بيانات الموظف</h2>
+            <form id="editEmployeeForm">
+                <input type="hidden" id="editEmpId">
+                <div class="form-group">
+                    <label>الرصيد السنوي</label>
+                    <input type="number" id="editEmpTotalDays" min="1">
+                </div>
+                <div class="form-group">
+                    <label>كلمة مرور جديدة (اختياري)</label>
+                    <input type="password" id="editEmpPassword" placeholder="اتركه فارغاً لعدم التغيير">
+                </div>
+                <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                <button type="button" class="btn btn-danger" onclick="closeEditEmployeeModal()">إلغاء</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal تغيير كلمة المرور -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <h2>🔐 تغيير كلمة المرور</h2>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label>كلمة المرور الحالية</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور الجديدة</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-success">تغيير</button>
+                <button type="button" class="btn btn-danger" onclick="closeChangePasswordModal()">إلغاء</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
         
@@ -300,50 +431,100 @@
         async function loadAllRequests() {
             const { data } = await supabase
                 .from('requests')
-                .select(`*, employees:employee_id (name)`)
+                .select(`*, employees:employee_id (name, total_annual, used)`)
                 .order('created_at', { ascending: false })
             
             allRequests = data || []
-            document.getElementById('totalRequests').textContent = allRequests.length
-            document.getElementById('pendingRequests').textContent = allRequests.filter(r => r.status === 'pending').length
-            
-            const tbody = document.getElementById('requestsTableBody')
-            tbody.innerHTML = allRequests.map(req => `
-                <tr>
-                    <td>${req.employees?.name || 'غير معروف'}</td>
-                    <td>${req.type}</td>
-                    <td>${req.start_date}</td>
-                    <td>${req.days}</td>
-                    <td><span class="status-badge status-${req.status}">${req.status}</span></td>
-                    <td>
-                        ${req.status === 'pending' ? `
-                            <button class="btn btn-success" onclick="approveRequest('${req.id}')">قبول</button>
-                            <button class="btn btn-danger" onclick="rejectRequest('${req.id}')">رفض</button>
-                        ` : '-'}
-                    </td>
-                </tr>
-            `).join('')
+            updateStats()
+            displayRequests()
         }
 
-        async function loadAllEmployees() {
-            const { data } = await supabase.from('employees').select('*').order('name')
-            allEmployees = data || []
-            
-            document.getElementById('employeesList').innerHTML = allEmployees.map(emp => `
-                <div class="employee-card">
-                    <div>
-                        <h3>👤 ${emp.name}</h3>
-                        <div>الإجمالي: ${emp.total_annual || 30} | المستخدم: ${emp.used || 0}</div>
-                    </div>
-                </div>
-            `).join('')
+        function updateStats() {
+            document.getElementById('totalRequests').textContent = allRequests.length
+            document.getElementById('pendingRequests').textContent = allRequests.filter(r => r.status === 'pending').length
+            document.getElementById('leaveRequests').textContent = allRequests.filter(r => r.request_type === 'leave').length
+            document.getElementById('missionRequests').textContent = allRequests.filter(r => r.request_type === 'mission').length
         }
+
+        function displayRequests() {
+            const filterType = document.getElementById('filterType')?.value || 'all'
+            const filterStatus = document.getElementById('filterStatus')?.value || 'all'
+            
+            let filtered = allRequests
+            if (filterType !== 'all') {
+                filtered = filtered.filter(r => r.request_type === filterType)
+            }
+            if (filterStatus !== 'all') {
+                filtered = filtered.filter(r => r.status === filterStatus)
+            }
+            
+            const tbody = document.getElementById('requestsTableBody')
+            tbody.innerHTML = filtered.map(req => {
+                const isLeave = req.request_type === 'leave'
+                const statusText = {
+                    'pending': '⏳ قيد الانتظار',
+                    'approved': '✅ مقبول',
+                    'rejected': '❌ مرفوض'
+                }[req.status] || req.status
+                
+                let details = ''
+                let dates = `من: ${req.start_date}`
+                if (isLeave) {
+                    details = `${req.type} - ${req.days} يوم`
+                } else {
+                    details = `${req.type} - ${req.destination || ''}`
+                    if (req.end_date) dates += `<br>إلى: ${req.end_date}`
+                }
+                
+                return `
+                    <tr>
+                        <td>
+                            ${req.employees?.name || 'غير معروف'}
+                            ${isLeave ? `<br><small>المتبقي: ${(req.employees?.total_annual || 30) - (req.employees?.used || 0)} يوم</small>` : ''}
+                        </td>
+                        <td>
+                            <span class="badge ${isLeave ? 'badge-leave' : 'badge-mission'}">
+                                ${isLeave ? 'إجازة' : 'مأمورية'}
+                            </span>
+                        </td>
+                        <td>${details}</td>
+                        <td>${dates}</td>
+                        <td><span class="status-badge status-${req.status}">${statusText}</span></td>
+                        <td>
+                            ${req.status === 'pending' ? `
+                                <button class="btn btn-success" onclick="approveRequest('${req.id}')">قبول</button>
+                                <button class="btn btn-danger" onclick="rejectRequest('${req.id}')">رفض</button>
+                            ` : `
+                                <button class="btn btn-warning" onclick="resetRequest('${req.id}')">إعادة تعيين</button>
+                            `}
+                        </td>
+                    </tr>
+                `
+            }).join('')
+        }
+
+        window.filterRequests = displayRequests
 
         window.approveRequest = async (id) => {
             const request = allRequests.find(r => r.id === id)
+            
+            if (request.request_type === 'leave') {
+                const employee = allEmployees.find(e => e.id === request.employee_id)
+                const remaining = (employee?.total_annual || 30) - (employee?.used || 0)
+                
+                if (request.days > remaining) {
+                    alert(`⚠️ رصيد الموظف غير كافٍ! المتبقي: ${remaining} يوم`)
+                    return
+                }
+                
+                await supabase.from('employees')
+                    .update({ used: (employee?.used || 0) + request.days })
+                    .eq('id', request.employee_id)
+            }
+            
             await supabase.from('requests').update({ status: 'approved' }).eq('id', id)
-            await supabase.from('employees').update({ used: (request.employees?.used || 0) + request.days }).eq('id', request.employee_id)
             loadAllData()
+            alert('✅ تم قبول الطلب')
         }
 
         window.rejectRequest = async (id) => {
@@ -351,34 +532,33 @@
             loadAllData()
         }
 
-        window.switchTab = (tab) => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-            event.target.classList.add('active')
-            document.getElementById('requestsTab').classList.toggle('active', tab === 'requests')
-            document.getElementById('employeesTab').classList.toggle('active', tab === 'employees')
-        }
-
-        window.openAddEmployeeModal = () => document.getElementById('addEmployeeModal').style.display = 'flex'
-        window.closeAddEmployeeModal = () => document.getElementById('addEmployeeModal').style.display = 'none'
-
-        document.getElementById('addEmployeeForm').addEventListener('submit', async (e) => {
-            e.preventDefault()
-            const name = document.getElementById('empName').value
-            const password = document.getElementById('empPassword').value
-            const total_annual = parseInt(document.getElementById('empTotalDays').value)
+        window.resetRequest = async (id) => {
+            const request = allRequests.find(r => r.id === id)
             
-            await supabase.from('employees').insert([{ name, password, total_annual }])
-            alert('✅ تم إضافة الموظف')
-            closeAddEmployeeModal()
-            loadAllEmployees()
-        })
-
-        window.logout = () => {
-            localStorage.removeItem('currentUser')
-            window.location.href = 'index.html'
+            if (request.request_type === 'leave' && request.status === 'approved') {
+                const employee = allEmployees.find(e => e.id === request.employee_id)
+                await supabase.from('employees')
+                    .update({ used: Math.max(0, (employee?.used || 0) - request.days) })
+                    .eq('id', request.employee_id)
+            }
+            
+            await supabase.from('requests').update({ status: 'pending' }).eq('id', id)
+            loadAllData()
         }
 
-        checkAuth()
-    </script>
-</body>
-</html>
+        async function loadAllEmployees() {
+            const { data } = await supabase.from('employees').select('*').order('name')
+            allEmployees = data || []
+            
+            document.getElementById('employeesList').innerHTML = allEmployees.map(emp => {
+                const remaining = (emp.total_annual || 30) - (emp.used || 0)
+                return `
+                    <div class="employee-card">
+                        <div class="employee-info">
+                            <h3>
+                                👤 ${emp.name}
+                                ${emp.role === 'admin' ? '👑' : ''}
+                            </h3>
+                            <div class="employee-stats">
+                                <span>📊 الإجمالي: ${emp.total_annual || 30} يوم</span>
+            
