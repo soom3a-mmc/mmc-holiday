@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة المدير - الإجازات والمأموريات</title>
+    <title>لوحة المدير - نظام الإجازات</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
         }
 
         body {
@@ -31,19 +31,18 @@
             align-items: center;
         }
 
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .btn-icon {
+        .logout-btn, .change-password-btn {
             background: rgba(255,255,255,0.2);
             color: white;
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 15px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .logout-btn:hover, .change-password-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .container {
@@ -95,6 +94,7 @@
             padding: 20px;
             border-radius: 15px;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
 
         .stat-value {
@@ -107,28 +107,30 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
 
-        .section-header {
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
         }
 
-        .requests-table {
+        .requests-table, .missions-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .requests-table th {
+        .requests-table th, .missions-table th {
             background: #f8f9fa;
             padding: 15px;
             text-align: right;
         }
 
-        .requests-table td {
+        .requests-table td, .missions-table td {
             padding: 15px;
             border-bottom: 1px solid #e0e0e0;
         }
@@ -143,16 +145,6 @@
         .status-approved { background: #d4edda; color: #155724; }
         .status-rejected { background: #f8d7da; color: #721c24; }
 
-        .badge {
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 11px;
-            margin-right: 5px;
-        }
-
-        .badge-leave { background: #e3f2fd; color: #1976d2; }
-        .badge-mission { background: #f3e5f5; color: #7b1fa2; }
-
         .btn {
             padding: 8px 16px;
             border: none;
@@ -166,7 +158,7 @@
         .btn-danger { background: #dc3545; color: white; }
         .btn-warning { background: #ffc107; color: #333; }
         .btn-info { background: #17a2b8; color: white; }
-        .btn-primary { background: #007bff; color: white; }
+        .btn-primary { background: #667eea; color: white; }
 
         .employee-card {
             border: 1px solid #e0e0e0;
@@ -176,25 +168,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .employee-info h3 {
-            margin-bottom: 5px;
-        }
-
-        .employee-stats {
-            display: flex;
-            gap: 20px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .remaining-badge {
-            background: #28a745;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 12px;
         }
 
         .modal {
@@ -227,22 +200,30 @@
             margin-bottom: 8px;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
         }
 
-        .filter-bar {
+        .export-buttons {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
 
-        .filter-bar select, .filter-bar input {
-            width: auto;
-            flex: 1;
+        .remaining-badge {
+            background: #d4edda;
+            color: #155724;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .remaining-low {
+            background: #f8d7da;
+            color: #721c24;
         }
     </style>
 </head>
@@ -250,19 +231,19 @@
     <div class="header">
         <div class="header-content">
             <h1>👨‍💼 لوحة تحكم المدير</h1>
-            <div class="user-menu">
+            <div style="display: flex; align-items: center; gap: 10px;">
                 <span id="userName"></span>
-                <button class="btn-icon" onclick="openChangePasswordModal()">🔐 تغيير كلمة المرور</button>
-                <button class="btn-icon" onclick="exportToExcel()">📊 تصدير Excel</button>
-                <button class="btn-icon" onclick="logout()">🚪 تسجيل الخروج</button>
+                <button class="change-password-btn" onclick="openChangePasswordModal()">🔐 تغيير كلمة المرور</button>
+                <button class="logout-btn" onclick="logout()">🚪 تسجيل الخروج</button>
             </div>
         </div>
     </div>
 
     <div class="container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('requests')">📋 جميع الطلبات</button>
+            <button class="tab active" onclick="switchTab('requests')">📋 طلبات الإجازات</button>
             <button class="tab" onclick="switchTab('employees')">👥 إدارة الموظفين</button>
+            <button class="tab" onclick="switchTab('missions')">📋 المأموريات</button>
         </div>
 
         <!-- تبويب الطلبات -->
@@ -273,104 +254,85 @@
                     <div class="stat-value" id="totalRequests">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">طلبات معلقة</div>
+                    <div class="stat-label">معلقة</div>
                     <div class="stat-value" id="pendingRequests">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">إجازات</div>
-                    <div class="stat-value" id="leaveRequests">0</div>
+                    <div class="stat-label">مقبولة</div>
+                    <div class="stat-value" id="approvedRequests">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">مأموريات</div>
-                    <div class="stat-value" id="missionRequests">0</div>
+                    <div class="stat-label">مرفوضة</div>
+                    <div class="stat-value" id="rejectedRequests">0</div>
                 </div>
             </div>
 
             <div class="section">
-                <div class="section-header">
-                    <h2>جميع الطلبات</h2>
-                    <div class="filter-bar">
-                        <select id="filterType" onchange="filterRequests()">
-                            <option value="all">الكل</option>
-                            <option value="leave">إجازات</option>
-                            <option value="mission">مأموريات</option>
-                        </select>
-                        <select id="filterStatus" onchange="filterRequests()">
-                            <option value="all">كل الحالات</option>
-                            <option value="pending">معلق</option>
-                            <option value="approved">مقبول</option>
-                            <option value="rejected">مرفوض</option>
-                        </select>
-                    </div>
+                <div class="section-title">
+                    <h2>جميع طلبات الإجازات</h2>
+                    <button class="btn btn-success" onclick="exportToExcel('requests')">📊 تصدير إلى Excel</button>
                 </div>
-                <table class="requests-table">
-                    <thead>
-                        <tr>
-                            <th>الموظف</th>
-                            <th>النوع</th>
-                            <th>التفاصيل</th>
-                            <th>التواريخ</th>
-                            <th>الحالة</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="requestsTableBody"></tbody>
-                </table>
+                <div style="overflow-x: auto;">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>الموظف</th>
+                                <th>النوع</th>
+                                <th>تاريخ البدء</th>
+                                <th>الأيام</th>
+                                <th>تاريخ التقديم</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- تبويب الموظفين -->
         <div id="employeesTab" class="tab-content">
             <div class="section">
-                <div class="section-header">
+                <div class="section-title">
                     <h2>قائمة الموظفين</h2>
-                    <button class="btn btn-success" onclick="openAddEmployeeModal()">➕ إضافة موظف</button>
+                    <div>
+                        <button class="btn btn-info" onclick="exportToExcel('employees')">📊 تصدير إلى Excel</button>
+                        <button class="btn btn-success" onclick="openAddEmployeeModal()">➕ إضافة موظف</button>
+                    </div>
                 </div>
                 <div id="employeesList"></div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal إضافة موظف -->
-    <div id="addEmployeeModal" class="modal">
-        <div class="modal-content">
-            <h2>إضافة موظف جديد</h2>
-            <form id="addEmployeeForm">
-                <div class="form-group">
-                    <label>اسم الموظف</label>
-                    <input type="text" id="empName" required>
+        <!-- تبويب المأموريات -->
+        <div id="missionsTab" class="tab-content">
+            <div class="section">
+                <div class="section-title">
+                    <h2>إدارة المأموريات</h2>
+                    <div>
+                        <button class="btn btn-info" onclick="exportToExcel('missions')">📊 تصدير إلى Excel</button>
+                        <button class="btn btn-success" onclick="openAddMissionModal()">➕ إضافة مأمورية</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="empPassword" required>
+                <div style="overflow-x: auto;">
+                    <table class="missions-table">
+                        <thead>
+                            <tr>
+                                <th>الموظف</th>
+                                <th>نوع المأمورية</th>
+                                <th>تاريخ البدء</th>
+                                <th>تاريخ الانتهاء</th>
+                                <th>المدة (أيام)</th>
+                                <th>الوصف</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="missionsTableBody"></tbody>
+                    </table>
                 </div>
-                <div class="form-group">
-                    <label>الرصيد السنوي</label>
-                    <input type="number" id="empTotalDays" value="30">
-                </div>
-                <button type="submit" class="btn btn-success">إضافة</button>
-                <button type="button" class="btn btn-danger" onclick="closeAddEmployeeModal()">إلغاء</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal تعديل موظف -->
-    <div id="editEmployeeModal" class="modal">
-        <div class="modal-content">
-            <h2>تعديل بيانات الموظف</h2>
-            <form id="editEmployeeForm">
-                <input type="hidden" id="editEmpId">
-                <div class="form-group">
-                    <label>الرصيد السنوي</label>
-                    <input type="number" id="editEmpTotalDays" min="1">
-                </div>
-                <div class="form-group">
-                    <label>كلمة مرور جديدة (اختياري)</label>
-                    <input type="password" id="editEmpPassword" placeholder="اتركه فارغاً لعدم التغيير">
-                </div>
-                <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
-                <button type="button" class="btn btn-danger" onclick="closeEditEmployeeModal()">إلغاء</button>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -388,11 +350,70 @@
                     <input type="password" id="newPassword" required>
                 </div>
                 <div class="form-group">
-                    <label>تأكيد كلمة المرور</label>
+                    <label>تأكيد كلمة المرور الجديدة</label>
                     <input type="password" id="confirmPassword" required>
                 </div>
-                <button type="submit" class="btn btn-success">تغيير</button>
+                <button type="submit" class="btn btn-success">تغيير كلمة المرور</button>
                 <button type="button" class="btn btn-danger" onclick="closeChangePasswordModal()">إلغاء</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal إضافة موظف -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="modal-content">
+            <h2>➕ إضافة موظف جديد</h2>
+            <form id="addEmployeeForm">
+                <div class="form-group">
+                    <label>اسم الموظف</label>
+                    <input type="text" id="empName" required>
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="empPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>الرصيد السنوي (أيام)</label>
+                    <input type="number" id="empTotalDays" value="30" min="1" max="365">
+                </div>
+                <button type="submit" class="btn btn-success">إضافة</button>
+                <button type="button" class="btn btn-danger" onclick="closeAddEmployeeModal()">إلغاء</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal إضافة مأمورية -->
+    <div id="addMissionModal" class="modal">
+        <div class="modal-content">
+            <h2>📋 إضافة مأمورية جديدة</h2>
+            <form id="addMissionForm">
+                <div class="form-group">
+                    <label>الموظف</label>
+                    <select id="missionEmployee" required></select>
+                </div>
+                <div class="form-group">
+                    <label>نوع المأمورية</label>
+                    <select id="missionType" required>
+                        <option value="داخلية">داخلية</option>
+                        <option value="خارجية">خارجية</option>
+                        <option value="تدريب">تدريب</option>
+                        <option value="مؤتمر">مؤتمر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>تاريخ البدء</label>
+                    <input type="date" id="missionStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label>تاريخ الانتهاء</label>
+                    <input type="date" id="missionEndDate" required>
+                </div>
+                <div class="form-group">
+                    <label>الوصف</label>
+                    <textarea id="missionDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">إضافة</button>
+                <button type="button" class="btn btn-danger" onclick="closeAddMissionModal()">إلغاء</button>
             </form>
         </div>
     </div>
@@ -408,7 +429,9 @@
         let currentUser = null
         let allRequests = []
         let allEmployees = []
+        let allMissions = []
 
+        // ============ دوال التحقق والتحميل ============
         function checkAuth() {
             const savedUser = localStorage.getItem('currentUser')
             if (!savedUser) {
@@ -425,9 +448,10 @@
         }
 
         async function loadAllData() {
-            await Promise.all([loadAllRequests(), loadAllEmployees()])
+            await Promise.all([loadAllRequests(), loadAllEmployees(), loadAllMissions()])
         }
 
+        // ============ إدارة الطلبات ============
         async function loadAllRequests() {
             const { data } = await supabase
                 .from('requests')
@@ -435,67 +459,43 @@
                 .order('created_at', { ascending: false })
             
             allRequests = data || []
-            updateStats()
-            displayRequests()
-        }
-
-        function updateStats() {
+            
+            // تحديث الإحصائيات
             document.getElementById('totalRequests').textContent = allRequests.length
             document.getElementById('pendingRequests').textContent = allRequests.filter(r => r.status === 'pending').length
-            document.getElementById('leaveRequests').textContent = allRequests.filter(r => r.request_type === 'leave').length
-            document.getElementById('missionRequests').textContent = allRequests.filter(r => r.request_type === 'mission').length
-        }
-
-        function displayRequests() {
-            const filterType = document.getElementById('filterType')?.value || 'all'
-            const filterStatus = document.getElementById('filterStatus')?.value || 'all'
+            document.getElementById('approvedRequests').textContent = allRequests.filter(r => r.status === 'approved').length
+            document.getElementById('rejectedRequests').textContent = allRequests.filter(r => r.status === 'rejected').length
             
-            let filtered = allRequests
-            if (filterType !== 'all') {
-                filtered = filtered.filter(r => r.request_type === filterType)
-            }
-            if (filterStatus !== 'all') {
-                filtered = filtered.filter(r => r.status === filterStatus)
-            }
-            
+            // عرض الطلبات
             const tbody = document.getElementById('requestsTableBody')
-            tbody.innerHTML = filtered.map(req => {
-                const isLeave = req.request_type === 'leave'
-                const statusText = {
-                    'pending': '⏳ قيد الانتظار',
-                    'approved': '✅ مقبول',
-                    'rejected': '❌ مرفوض'
-                }[req.status] || req.status
-                
-                let details = ''
-                let dates = `من: ${req.start_date}`
-                if (isLeave) {
-                    details = `${req.type} - ${req.days} يوم`
-                } else {
-                    details = `${req.type} - ${req.destination || ''}`
-                    if (req.end_date) dates += `<br>إلى: ${req.end_date}`
-                }
+            if (allRequests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">لا توجد طلبات</td></tr>'
+                return
+            }
+            
+            tbody.innerHTML = allRequests.map(req => {
+                const employee = req.employees || {}
+                const remaining = (employee.total_annual || 30) - (employee.used || 0)
                 
                 return `
                     <tr>
                         <td>
-                            ${req.employees?.name || 'غير معروف'}
-                            ${isLeave ? `<br><small>المتبقي: ${(req.employees?.total_annual || 30) - (req.employees?.used || 0)} يوم</small>` : ''}
-                        </td>
-                        <td>
-                            <span class="badge ${isLeave ? 'badge-leave' : 'badge-mission'}">
-                                ${isLeave ? 'إجازة' : 'مأمورية'}
+                            ${employee.name || 'غير معروف'}
+                            <span class="remaining-badge ${remaining < 5 ? 'remaining-low' : ''}">
+                                متبقي: ${remaining}
                             </span>
                         </td>
-                        <td>${details}</td>
-                        <td>${dates}</td>
-                        <td><span class="status-badge status-${req.status}">${statusText}</span></td>
+                        <td>${req.type}</td>
+                        <td>${req.start_date}</td>
+                        <td>${req.days}</td>
+                        <td>${new Date(req.created_at).toLocaleDateString('ar-SA')}</td>
+                        <td><span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></td>
                         <td>
                             ${req.status === 'pending' ? `
-                                <button class="btn btn-success" onclick="approveRequest('${req.id}')">قبول</button>
-                                <button class="btn btn-danger" onclick="rejectRequest('${req.id}')">رفض</button>
+                                <button class="btn btn-success" onclick="approveRequest('${req.id}')">✅ قبول</button>
+                                <button class="btn btn-danger" onclick="rejectRequest('${req.id}')">❌ رفض</button>
                             ` : `
-                                <button class="btn btn-warning" onclick="resetRequest('${req.id}')">إعادة تعيين</button>
+                                <button class="btn btn-warning" onclick="resetRequest('${req.id}')">🔄 إعادة تعيين</button>
                             `}
                         </td>
                     </tr>
@@ -503,62 +503,384 @@
             }).join('')
         }
 
-        window.filterRequests = displayRequests
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '⏳ قيد الانتظار',
+                'approved': '✅ مقبول',
+                'rejected': '❌ مرفوض'
+            }
+            return statusMap[status] || status
+        }
 
         window.approveRequest = async (id) => {
             const request = allRequests.find(r => r.id === id)
+            if (!request) return
             
-            if (request.request_type === 'leave') {
-                const employee = allEmployees.find(e => e.id === request.employee_id)
-                const remaining = (employee?.total_annual || 30) - (employee?.used || 0)
-                
-                if (request.days > remaining) {
-                    alert(`⚠️ رصيد الموظف غير كافٍ! المتبقي: ${remaining} يوم`)
-                    return
-                }
-                
-                await supabase.from('employees')
-                    .update({ used: (employee?.used || 0) + request.days })
-                    .eq('id', request.employee_id)
+            // تحديث حالة الطلب
+            await supabase.from('requests').update({ status: 'approved' }).eq('id', id)
+            
+            // تحديث رصيد الموظف
+            const employee = request.employees
+            if (employee) {
+                const newUsed = (employee.used || 0) + request.days
+                await supabase.from('employees').update({ used: newUsed }).eq('id', request.employee_id)
             }
             
-            await supabase.from('requests').update({ status: 'approved' }).eq('id', id)
+            alert('✅ تم قبول الطلب وتحديث الرصيد')
             loadAllData()
-            alert('✅ تم قبول الطلب')
         }
 
         window.rejectRequest = async (id) => {
             await supabase.from('requests').update({ status: 'rejected' }).eq('id', id)
+            alert('تم رفض الطلب')
             loadAllData()
         }
 
         window.resetRequest = async (id) => {
             const request = allRequests.find(r => r.id === id)
+            if (!request) return
             
-            if (request.request_type === 'leave' && request.status === 'approved') {
-                const employee = allEmployees.find(e => e.id === request.employee_id)
-                await supabase.from('employees')
-                    .update({ used: Math.max(0, (employee?.used || 0) - request.days) })
-                    .eq('id', request.employee_id)
+            // إذا كان الطلب مقبولاً، نعيد الأيام للموظف
+            if (request.status === 'approved') {
+                const employee = request.employees
+                if (employee) {
+                    const newUsed = Math.max(0, (employee.used || 0) - request.days)
+                    await supabase.from('employees').update({ used: newUsed }).eq('id', request.employee_id)
+                }
             }
             
             await supabase.from('requests').update({ status: 'pending' }).eq('id', id)
+            alert('تم إعادة تعيين الطلب')
             loadAllData()
         }
 
+        // ============ إدارة الموظفين ============
         async function loadAllEmployees() {
             const { data } = await supabase.from('employees').select('*').order('name')
             allEmployees = data || []
             
-            document.getElementById('employeesList').innerHTML = allEmployees.map(emp => {
+            const container = document.getElementById('employeesList')
+            if (allEmployees.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px;">لا يوجد موظفين</div>'
+                return
+            }
+            
+            container.innerHTML = allEmployees.map(emp => {
                 const remaining = (emp.total_annual || 30) - (emp.used || 0)
                 return `
                     <div class="employee-card">
-                        <div class="employee-info">
-                            <h3>
-                                👤 ${emp.name}
-                                ${emp.role === 'admin' ? '👑' : ''}
-                            </h3>
-                            <div class="employee-stats">
+                        <div>
+                            <h3>👤 ${emp.name} ${emp.role === 'admin' ? '(مدير)' : ''}</h3>
+                            <div style="margin-top: 10px;">
                                 <span>📊 الإجمالي: ${emp.total_annual || 30} يوم</span>
+                                <span style="margin-right: 20px;">✅ المستخدم: ${emp.used || 0} يوم</span>
+                                <span style="margin-right: 20px;" class="remaining-badge ${remaining < 5 ? 'remaining-low' : ''}">
+                                    ⏳ المتبقي: ${remaining} يوم
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            ${emp.role !== 'admin' ? `
+                                <button class="btn btn-warning" onclick="editEmployeeDays('${emp.id}')">✏️ تعديل الرصيد</button>
+                                <button class="btn btn-danger" onclick="deleteEmployee('${emp.id}', '${emp.name}')">🗑️ حذف</button>
+                            ` : ''}
+                            <button class="btn btn-info" onclick="changeEmployeePassword('${emp.id}', '${emp.name}')">🔐 تغيير كلمة المرور</button>
+                        </div>
+                    </div>
+                `
+            }).join('')
             
+            // تحديث قائمة الموظفين في نموذج المأموريات
+            const missionSelect = document.getElementById('missionEmployee')
+            if (missionSelect) {
+                missionSelect.innerHTML = '<option value="">اختر الموظف</option>' + 
+                    allEmployees.filter(e => e.role !== 'admin').map(e => 
+                        `<option value="${e.id}">${e.name}</option>`
+                    ).join('')
+            }
+        }
+
+        window.editEmployeeDays = async (id) => {
+            const employee = allEmployees.find(e => e.id === id)
+            if (!employee) return
+            
+            const newTotal = prompt('أدخل الرصيد السنوي الجديد:', employee.total_annual || 30)
+            if (newTotal === null) return
+            
+            const totalDays = parseInt(newTotal)
+            if (isNaN(totalDays) || totalDays < 1) {
+                alert('الرجاء إدخال رقم صحيح')
+                return
+            }
+            
+            await supabase.from('employees').update({ total_annual: totalDays }).eq('id', id)
+            alert('✅ تم تحديث الرصيد')
+            loadAllEmployees()
+        }
+
+        window.deleteEmployee = async (id, name) => {
+            if (!confirm(`هل أنت متأكد من حذف الموظف "${name}"؟\nسيتم حذف جميع طلباته أيضاً.`)) return
+            
+            const { error } = await supabase.from('employees').delete().eq('id', id)
+            if (error) {
+                alert('❌ فشل حذف الموظف: ' + error.message)
+            } else {
+                alert('✅ تم حذف الموظف بنجاح')
+                loadAllData()
+            }
+        }
+
+        window.changeEmployeePassword = async (id, name) => {
+            const newPassword = prompt(`أدخل كلمة المرور الجديدة للموظف "${name}":`)
+            if (!newPassword) return
+            
+            await supabase.from('employees').update({ password: newPassword }).eq('id', id)
+            alert('✅ تم تغيير كلمة المرور بنجاح')
+        }
+
+        // ============ إدارة المأموريات ============
+        async function loadAllMissions() {
+            const { data } = await supabase
+                .from('missions')
+                .select(`*, employees:employee_id (name)`)
+                .order('created_at', { ascending: false })
+            
+            allMissions = data || []
+            
+            const tbody = document.getElementById('missionsTableBody')
+            if (allMissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">لا توجد مأموريات</td></tr>'
+                return
+            }
+            
+            tbody.innerHTML = allMissions.map(m => {
+                const startDate = new Date(m.start_date)
+                const endDate = new Date(m.end_date)
+                const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1
+                
+                return `
+                    <tr>
+                        <td>${m.employees?.name || 'غير معروف'}</td>
+                        <td>${m.type}</td>
+                        <td>${m.start_date}</td>
+                        <td>${m.end_date}</td>
+                        <td>${days} يوم</td>
+                        <td>${m.description || '-'}</td>
+                        <td><span class="status-badge status-${m.status}">${getMissionStatusText(m.status)}</span></td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteMission('${m.id}')">🗑️ حذف</button>
+                        </td>
+                    </tr>
+                `
+            }).join('')
+        }
+
+        function getMissionStatusText(status) {
+            return status === 'active' ? '✅ نشطة' : '✅ مكتملة'
+        }
+
+        window.deleteMission = async (id) => {
+            if (!confirm('هل أنت متأكد من حذف هذه المأمورية؟')) return
+            
+            await supabase.from('missions').delete().eq('id', id)
+            alert('✅ تم حذف المأمورية')
+            loadAllMissions()
+        }
+
+        // ============ تغيير كلمة المرور ============
+        window.openChangePasswordModal = () => {
+            document.getElementById('changePasswordModal').style.display = 'flex'
+        }
+
+        window.closeChangePasswordModal = () => {
+            document.getElementById('changePasswordModal').style.display = 'none'
+            document.getElementById('changePasswordForm').reset()
+        }
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const currentPass = document.getElementById('currentPassword').value
+            const newPass = document.getElementById('newPassword').value
+            const confirmPass = document.getElementById('confirmPassword').value
+            
+            if (currentPass !== currentUser.password) {
+                alert('❌ كلمة المرور الحالية غير صحيحة')
+                return
+            }
+            
+            if (newPass !== confirmPass) {
+                alert('❌ كلمة المرور الجديدة غير متطابقة')
+                return
+            }
+            
+            if (newPass.length < 3) {
+                alert('❌ كلمة المرور يجب أن تكون 3 أحرف على الأقل')
+                return
+            }
+            
+            await supabase.from('employees').update({ password: newPass }).eq('id', currentUser.id)
+            
+            // تحديث بيانات المستخدم الحالي
+            currentUser.password = newPass
+            localStorage.setItem('currentUser', JSON.stringify(currentUser))
+            
+            alert('✅ تم تغيير كلمة المرور بنجاح')
+            closeChangePasswordModal()
+        })
+
+        // ============ إضافة موظف ============
+        window.openAddEmployeeModal = () => {
+            document.getElementById('addEmployeeModal').style.display = 'flex'
+        }
+
+        window.closeAddEmployeeModal = () => {
+            document.getElementById('addEmployeeModal').style.display = 'none'
+            document.getElementById('addEmployeeForm').reset()
+        }
+
+        document.getElementById('addEmployeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const name = document.getElementById('empName').value.trim()
+            const password = document.getElementById('empPassword').value
+            const totalDays = parseInt(document.getElementById('empTotalDays').value)
+            
+            if (password.length < 3) {
+                alert('❌ كلمة المرور يجب أن تكون 3 أحرف على الأقل')
+                return
+            }
+            
+            const { error } = await supabase.from('employees').insert([{
+                name, password, total_annual: totalDays, role: 'employee'
+            }])
+            
+            if (error) {
+                if (error.message.includes('duplicate')) {
+                    alert('❌ اسم المستخدم موجود مسبقاً')
+                } else {
+                    alert('❌ فشل إضافة الموظف: ' + error.message)
+                }
+            } else {
+                alert('✅ تم إضافة الموظف بنجاح')
+                closeAddEmployeeModal()
+                loadAllEmployees()
+            }
+        })
+
+        // ============ إضافة مأمورية ============
+        window.openAddMissionModal = () => {
+            document.getElementById('addMissionModal').style.display = 'flex'
+        }
+
+        window.closeAddMissionModal = () => {
+            document.getElementById('addMissionModal').style.display = 'none'
+            document.getElementById('addMissionForm').reset()
+        }
+
+        document.getElementById('addMissionForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const employee_id = document.getElementById('missionEmployee').value
+            const type = document.getElementById('missionType').value
+            const start_date = document.getElementById('missionStartDate').value
+            const end_date = document.getElementById('missionEndDate').value
+            const description = document.getElementById('missionDescription').value
+            
+            if (!employee_id) {
+                alert('❌ الرجاء اختيار الموظف')
+                return
+            }
+            
+            if (new Date(end_date) < new Date(start_date)) {
+                alert('❌ تاريخ الانتهاء يجب أن يكون بعد تاريخ البدء')
+                return
+            }
+            
+            const { error } = await supabase.from('missions').insert([{
+                employee_id, type, start_date, end_date, description, status: 'active'
+            }])
+            
+            if (error) {
+                alert('❌ فشل إضافة المأمورية: ' + error.message)
+            } else {
+                alert('✅ تم إضافة المأمورية بنجاح')
+                closeAddMissionModal()
+                loadAllMissions()
+            }
+        })
+
+        // ============ التبويبات ============
+        window.switchTab = (tabName) => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+            event.target.classList.add('active')
+            
+            document.getElementById('requestsTab').classList.toggle('active', tabName === 'requests')
+            document.getElementById('employeesTab').classList.toggle('active', tabName === 'employees')
+            document.getElementById('missionsTab').classList.toggle('active', tabName === 'missions')
+        }
+
+        // ============ تصدير Excel ============
+        window.exportToExcel = (type) => {
+            let data = []
+            let fileName = ''
+            
+            if (type === 'requests') {
+                data = allRequests.map(r => ({
+                    'الموظف': r.employees?.name || 'غير معروف',
+                    'نوع الإجازة': r.type,
+                    'تاريخ البدء': r.start_date,
+                    'عدد الأيام': r.days,
+                    'الحالة': getStatusText(r.status),
+                    'تاريخ التقديم': new Date(r.created_at).toLocaleDateString('ar-SA')
+                }))
+                fileName = 'طلبات_الإجازات.xlsx'
+            } else if (type === 'employees') {
+                data = allEmployees.map(e => ({
+                    'اسم الموظف': e.name,
+                    'الصلاحية': e.role === 'admin' ? 'مدير' : 'موظف',
+                    'الرصيد السنوي': e.total_annual || 30,
+                    'المستخدم': e.used || 0,
+                    'المتبقي': (e.total_annual || 30) - (e.used || 0)
+                }))
+                fileName = 'قائمة_الموظفين.xlsx'
+            } else if (type === 'missions') {
+                data = allMissions.map(m => {
+                    const start = new Date(m.start_date)
+                    const end = new Date(m.end_date)
+                    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1
+                    return {
+                        'الموظف': m.employees?.name || 'غير معروف',
+                        'النوع': m.type,
+                        'تاريخ البدء': m.start_date,
+                        'تاريخ الانتهاء': m.end_date,
+                        'المدة': days + ' يوم',
+                        'الوصف': m.description || '-',
+                        'الحالة': m.status === 'active' ? 'نشطة' : 'مكتملة'
+                    }
+                })
+                fileName = 'المأموريات.xlsx'
+            }
+            
+            if (data.length === 0) {
+                alert('لا توجد بيانات للتصدير')
+                return
+            }
+            
+            const ws = XLSX.utils.json_to_sheet(data)
+            const wb = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+            XLSX.writeFile(wb, fileName)
+        }
+
+        // ============ تسجيل الخروج ============
+        window.logout = () => {
+            localStorage.removeItem('currentUser')
+            window.location.href = 'index.html'
+        }
+
+        // بدء التطبيق
+        checkAuth()
+    </script>
+</body>
+</html>
