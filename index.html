@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الإجازات - تسجيل الدخول</title>
+    <title>نظام إدارة الإجازات MMC - تسجيل الدخول</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
@@ -24,34 +24,46 @@
         .container {
             background: white;
             border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             padding: 40px;
             width: 100%;
             max-width: 400px;
-            text-align: center;
         }
 
         h1 {
+            text-align: center;
             color: #333;
             margin-bottom: 30px;
         }
 
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 50px;
+        }
+
         .form-group {
             margin-bottom: 20px;
-            text-align: right;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
             color: #555;
+            font-weight: 500;
         }
 
         input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
         button {
@@ -62,123 +74,106 @@
             border: none;
             border-radius: 10px;
             font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
         }
 
-        .error {
-            color: red;
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
             margin-top: 15px;
             display: none;
         }
 
-        .info {
+        .demo-credentials {
             margin-top: 20px;
             padding: 15px;
-            background: #f0f0f0;
+            background: #f8f9fa;
             border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏢 نظام الإجازات</h1>
+        <div class="logo">🏢</div>
+        <h1>نظام الإجازات والمأموريات</h1>
         
         <form id="loginForm">
             <div class="form-group">
-                <label>👤 اسم المستخدم</label>
-                <input type="text" id="username" required>
+                <label for="username">👤 اسم المستخدم</label>
+                <input type="text" id="username" required placeholder="أدخل اسم المستخدم">
             </div>
             
             <div class="form-group">
-                <label>🔒 كلمة المرور</label>
-                <input type="password" id="password" required>
+                <label for="password">🔒 كلمة المرور</label>
+                <input type="password" id="password" required placeholder="أدخل كلمة المرور">
             </div>
             
             <button type="submit">تسجيل الدخول</button>
         </form>
         
-        <div class="error" id="errorMessage"></div>
+        <div class="error-message" id="errorMessage"></div>
         
-        <div class="info">
-            <p><strong>بيانات الدخول:</strong></p>
-            <p>مدير: admin / 123</p>
-            <p>موظف: ahmed / 123</p>
+        <div class="demo-credentials">
+            <p><strong>بيانات تجريبية:</strong></p>
+            <p>👨‍💼 مدير: admin / 123</p>
+            <p>👨‍💻 موظف: ahmed / 123</p>
         </div>
     </div>
 
-    <!-- استخدام Supabase بالطريقة القديمة (أكثر توافقاً) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // انتظر تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('الصفحة جاهزة');
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+        
+        const SUPABASE_URL = 'https://ueszjhtztdlqaduogzog.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlc3pqaHR6dGRscWFkdW9nem9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDkxNDksImV4cCI6MjA5MjE4NTE0OX0.euN5Uijw9WXt2aGuk-sNWMMZ78IIiuxVOBBvuzjobxk'
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        const loginForm = document.getElementById('loginForm')
+        const errorMessage = document.getElementById('errorMessage')
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault()
             
-            // إنشاء اتصال Supabase
-            const supabase = window.supabase.createClient(
-                'https://ueszjhtztdlqaduogzog.supabase.co',
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlc3pqaHR6dGRscWFkdW9nem9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDkxNDksImV4cCI6MjA5MjE4NTE0OX0.euN5Uijw9WXt2aGuk-sNWMMZ78IIiuxVOBBvuzjobxk'
-            );
+            const username = document.getElementById('username').value
+            const password = document.getElementById('password').value
             
-            console.log('Supabase جاهز');
-            
-            const loginForm = document.getElementById('loginForm');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
+            try {
+                const { data, error } = await supabase
+                    .from('employees')
+                    .select('*')
+                    .eq('name', username)
+                    .eq('password', password)
+                    .single()
                 
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                
-                console.log('محاولة تسجيل الدخول:', username);
-                errorMessage.style.display = 'none';
-                
-                try {
-                    const { data, error } = await supabase
-                        .from('employees')
-                        .select('*')
-                        .eq('name', username)
-                        .eq('password', password)
-                        .single();
-                    
-                    if (error) {
-                        console.error('خطأ:', error);
-                        throw new Error('بيانات الدخول غير صحيحة');
-                    }
-                    
-                    if (data) {
-                        console.log('تم تسجيل الدخول:', data);
-                        localStorage.setItem('currentUser', JSON.stringify(data));
-                        
-                        if (data.role === 'admin') {
-                            window.location.href = 'admin.html';
-                        } else {
-                            window.location.href = 'employee.html';
-                        }
-                    }
-                    
-                } catch (err) {
-                    console.error('فشل:', err);
-                    errorMessage.textContent = err.message;
-                    errorMessage.style.display = 'block';
+                if (error || !data) {
+                    throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة')
                 }
-            });
-            
-            // التحقق من جلسة سابقة
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                try {
-                    const user = JSON.parse(savedUser);
-                    if (user.role === 'admin') {
-                        window.location.href = 'admin.html';
-                    } else {
-                        window.location.href = 'employee.html';
-                    }
-                } catch (e) {
-                    localStorage.removeItem('currentUser');
+                
+                localStorage.setItem('currentUser', JSON.stringify(data))
+                
+                if (data.role === 'admin') {
+                    window.location.href = 'admin.html'
+                } else {
+                    window.location.href = 'employee.html'
                 }
+                
+            } catch (error) {
+                errorMessage.textContent = error.message
+                errorMessage.style.display = 'block'
             }
-        });
+        })
+
+        const savedUser = localStorage.getItem('currentUser')
+        if (savedUser) {
+            const user = JSON.parse(savedUser)
+            window.location.href = user.role === 'admin' ? 'admin.html' : 'employee.html'
+        }
     </script>
 </body>
 </html>
