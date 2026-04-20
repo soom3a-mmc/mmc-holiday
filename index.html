@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#667eea">
-    <title>نظام الإجازات - تسجيل الدخول</title>
+    <meta name="theme-color" content="#1a1a2e">
+    <title>MMC - نظام الإجازات</title>
     <style>
         * {
             margin: 0;
@@ -14,36 +14,38 @@
             transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
 
-        /* Light Mode (افتراضي) */
+        /* Light Mode */
         :root {
             --bg-primary: #f5f5f5;
             --bg-secondary: #ffffff;
-            --text-primary: #333333;
-            --text-secondary: #555555;
+            --text-primary: #1a1a2e;
+            --text-secondary: #333333;
             --text-muted: #666666;
             --border-color: #e0e0e0;
             --input-bg: #ffffff;
             --shadow: rgba(0,0,0,0.1);
-            --gradient-start: #667eea;
-            --gradient-end: #764ba2;
+            --gradient-start: #1a1a2e;
+            --gradient-end: #2d2d4e;
             --card-bg: #ffffff;
             --demo-bg: #f8f9fa;
+            --accent-color: #c9a84c;
         }
 
         /* Dark Mode */
         [data-theme="dark"] {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
+            --bg-primary: #0d0d1a;
+            --bg-secondary: #1a1a2e;
             --text-primary: #e0e0e0;
             --text-secondary: #b0b0b0;
             --text-muted: #888888;
             --border-color: #2a2a4a;
-            --input-bg: #0f3460;
-            --shadow: rgba(0,0,0,0.3);
-            --gradient-start: #0f3460;
-            --gradient-end: #16213e;
-            --card-bg: #16213e;
-            --demo-bg: #0f3460;
+            --input-bg: #0f0f20;
+            --shadow: rgba(0,0,0,0.5);
+            --gradient-start: #1a1a2e;
+            --gradient-end: #0d0d1a;
+            --card-bg: #1a1a2e;
+            --demo-bg: #0f0f20;
+            --accent-color: #d4b85c;
         }
 
         body {
@@ -61,8 +63,9 @@
             box-shadow: 0 20px 60px var(--shadow);
             padding: 40px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             animation: slideUp 0.5s ease;
+            border-top: 4px solid var(--accent-color);
         }
 
         @keyframes slideUp {
@@ -70,17 +73,72 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ============ لوجو MMC ============ */
+        .company-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent-color);
+            box-shadow: 0 5px 15px var(--shadow);
+            border: 2px solid var(--accent-color);
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .company-name .consultancy {
+            font-size: 14px;
+            color: var(--accent-color);
+            display: block;
+            font-weight: normal;
+            letter-spacing: 3px;
+        }
+
+        .company-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .divider {
+            width: 50px;
+            height: 2px;
+            background: var(--accent-color);
+            margin: 15px auto;
+            opacity: 0.5;
+        }
+
         h1 {
             text-align: center;
             color: var(--text-primary);
-            margin-bottom: 30px;
-            font-size: clamp(24px, 5vw, 28px);
-        }
-
-        .logo {
-            text-align: center;
             margin-bottom: 20px;
-            font-size: clamp(40px, 10vw, 50px);
+            font-size: clamp(20px, 5vw, 22px);
+            font-weight: 500;
         }
 
         .theme-toggle {
@@ -100,6 +158,7 @@
             box-shadow: 0 5px 15px var(--shadow);
             color: var(--text-primary);
             z-index: 1000;
+            border: 1px solid var(--border-color);
         }
 
         .form-group {
@@ -115,7 +174,7 @@
 
         input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 15px;
             border: 2px solid var(--border-color);
             border-radius: 10px;
             font-size: 16px;
@@ -125,19 +184,21 @@
 
         input:focus {
             outline: none;
-            border-color: var(--gradient-start);
+            border-color: var(--accent-color);
         }
 
         button {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%);
             color: white;
             border: none;
             border-radius: 10px;
             font-size: clamp(16px, 4vw, 18px);
             font-weight: 600;
             cursor: pointer;
+            margin-top: 10px;
+            border-bottom: 3px solid var(--accent-color);
         }
 
         button:hover {
@@ -156,19 +217,31 @@
             display: none;
             text-align: center;
             margin-top: 15px;
-            color: var(--gradient-start);
+            color: var(--accent-color);
         }
 
         .demo-credentials {
-            margin-top: 20px;
+            margin-top: 25px;
             padding: 15px;
             background: var(--demo-bg);
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-primary);
+            border-right: 3px solid var(--accent-color);
         }
 
-        /* تصميم متجاوب للموبايل */
+        .demo-credentials p {
+            margin: 5px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* تصميم متجاوب */
         @media (max-width: 480px) {
             body {
                 padding: 10px;
@@ -180,6 +253,16 @@
                 padding: 25px 20px;
             }
 
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            .company-name {
+                font-size: 20px;
+            }
+
             .theme-toggle {
                 top: 10px;
                 left: 10px;
@@ -188,20 +271,26 @@
                 font-size: 20px;
             }
         }
-
-        @media (max-width: 350px) {
-            .container {
-                padding: 20px 15px;
-            }
-        }
     </style>
 </head>
 <body>
     <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
 
     <div class="container">
-        <div class="logo">🏢</div>
-        <h1>نظام الإجازات</h1>
+        <!-- لوجو MMC -->
+        <div class="company-header">
+            <div class="logo-container">
+                <div class="logo-icon">MMC</div>
+                <div class="company-name">
+                    MURTADA MAAZ
+                    <span class="consultancy">CONSULTANCY</span>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="company-subtitle">Engineering & Management Services</div>
+        </div>
+
+        <h1>نظام إدارة الإجازات</h1>
         
         <form id="loginForm">
             <div class="form-group">
@@ -221,9 +310,13 @@
         <div class="error-message" id="errorMessage"></div>
         
         <div class="demo-credentials">
-            <p><strong>بيانات تجريبية:</strong></p>
+            <p><strong>🔑 بيانات تجريبية:</strong></p>
             <p>👨‍💼 مدير: admin / 123</p>
             <p>👨‍💻 موظف: ahmed / 123</p>
+        </div>
+        
+        <div class="footer">
+            © 2026 MURTADA MAAZ CONSULTANCY. All rights reserved.
         </div>
     </div>
 
@@ -254,7 +347,7 @@
             const icon = document.getElementById('themeToggle')
             icon.textContent = theme === 'dark' ? '☀️' : '🌙'
             document.querySelector('meta[name="theme-color"]').content = 
-                theme === 'dark' ? '#16213e' : '#667eea'
+                theme === 'dark' ? '#0d0d1a' : '#1a1a2e'
         }
 
         window.toggleTheme = toggleTheme
