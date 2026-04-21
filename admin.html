@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no">
     <meta name="theme-color" content="#1a1a2e">
     <title>MMC - لوحة المدير</title>
     <style>
@@ -53,16 +53,19 @@
         body {
             background: var(--bg-primary);
             min-height: 100vh;
+            overflow-x: hidden;
+            width: 100%;
         }
 
         .header {
             background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
             color: white;
-            padding: 12px 20px;
+            padding: 10px 15px;
             position: sticky;
             top: 0;
             z-index: 100;
             border-bottom: 3px solid var(--accent-color);
+            width: 100%;
         }
 
         .header-content {
@@ -72,54 +75,62 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         /* لوجو MMC */
         .logo-wrapper {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .logo-box {
-            width: 45px;
-            height: 45px;
+            width: 38px;
+            height: 38px;
             background: rgba(255,255,255,0.1);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: var(--accent-color);
             border: 1.5px solid var(--accent-color);
         }
 
         .logo-text h3 {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: bold;
-            line-height: 1.3;
+            line-height: 1.2;
         }
 
         .logo-text span {
-            font-size: 10px;
+            font-size: 8px;
             opacity: 0.9;
             color: var(--accent-color);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 5px;
             flex-wrap: wrap;
+        }
+
+        #userName {
+            font-size: 11px !important;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .notification-wrapper {
@@ -130,10 +141,10 @@
             background: rgba(255,255,255,0.1);
             color: white;
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             position: relative;
         }
 
@@ -144,12 +155,12 @@
             background: var(--notification-bg);
             color: white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
         }
 
@@ -158,15 +169,15 @@
             top: 100%;
             left: 0;
             background: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 10px 30px var(--shadow);
-            width: 320px;
-            max-width: 90vw;
-            max-height: 400px;
+            width: 280px;
+            max-width: 85vw;
+            max-height: 350px;
             overflow-y: auto;
             display: none;
             z-index: 1000;
-            margin-top: 10px;
+            margin-top: 8px;
             border: 1px solid var(--border-color);
         }
 
@@ -175,14 +186,11 @@
         }
 
         .notification-item {
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             color: var(--text-primary);
-        }
-
-        .notification-item:hover {
-            background: var(--table-header-bg);
+            font-size: 13px;
         }
 
         .notification-item.unread {
@@ -191,49 +199,53 @@
         }
 
         .notification-time {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .theme-toggle, .logout-btn, .change-password-btn {
             background: rgba(255,255,255,0.1);
             color: white;
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 11px;
             white-space: nowrap;
         }
 
         .container {
             max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 15px;
+            margin: 15px auto;
+            padding: 0 10px;
+            width: 100%;
+            overflow-x: hidden;
         }
 
         .tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 5px;
+            margin-bottom: 15px;
             background: var(--card-bg);
-            padding: 8px;
-            border-radius: 12px;
+            padding: 6px;
+            border-radius: 10px;
             flex-wrap: wrap;
             box-shadow: 0 5px 15px var(--shadow);
             border-bottom: 2px solid var(--accent-color);
         }
 
         .tab {
-            padding: 10px 20px;
+            padding: 8px 12px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
             cursor: pointer;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 500;
+            flex: 1 0 auto;
+            min-width: 90px;
         }
 
         .tab.active {
@@ -251,81 +263,87 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .stat-card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
+            padding: 15px 10px;
+            border-radius: 10px;
             text-align: center;
             box-shadow: 0 5px 15px var(--shadow);
             border-top: 3px solid var(--accent-color);
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: bold;
             color: var(--accent-color);
         }
 
         .stat-label {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .section {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
             box-shadow: 0 5px 15px var(--shadow);
+            overflow-x: auto;
         }
 
         .section-title {
-            font-size: 18px;
-            margin-bottom: 20px;
+            font-size: 16px;
+            margin-bottom: 15px;
             color: var(--text-primary);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             border-bottom: 2px solid var(--border-color);
-            padding-bottom: 15px;
+            padding-bottom: 10px;
+        }
+
+        .section-title h2 {
+            font-size: 16px;
         }
 
         .requests-table, .missions-table {
             width: 100%;
             border-collapse: collapse;
-            overflow-x: auto;
-            display: block;
+            min-width: 600px;
+            font-size: 12px;
         }
 
         .requests-table th, .missions-table th {
             background: var(--table-header-bg);
-            padding: 12px;
+            padding: 8px 5px;
             text-align: right;
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 11px;
             white-space: nowrap;
         }
 
         .requests-table td, .missions-table td {
-            padding: 12px;
+            padding: 8px 5px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 11px;
             white-space: nowrap;
         }
 
         .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 10px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .status-pending { background: #fff3cd; color: #856404; }
@@ -333,12 +351,12 @@
         .status-rejected { background: #f8d7da; color: #721c24; }
 
         .btn {
-            padding: 8px 12px;
+            padding: 6px 8px;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
-            margin: 2px;
-            font-size: 12px;
+            margin: 1px;
+            font-size: 10px;
             white-space: nowrap;
         }
 
@@ -347,29 +365,40 @@
         .btn-warning { background: #ffc107; color: #333; }
         .btn-info { background: #17a2b8; color: white; }
 
+        .action-buttons {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+        }
+
         .employee-card {
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            flex-direction: column;
+            gap: 10px;
             background: var(--card-bg);
         }
 
         .employee-info h3 {
             color: var(--text-primary);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .employee-stats {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 11px;
+            flex-wrap: wrap;
+        }
+
+        .employee-actions {
+            display: flex;
+            gap: 5px;
             flex-wrap: wrap;
         }
 
@@ -384,37 +413,44 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            padding: 15px;
+            padding: 10px;
         }
 
         .modal-content {
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
+            padding: 20px 15px;
+            border-radius: 10px;
             width: 100%;
-            max-width: 450px;
-            max-height: 90vh;
+            max-width: 400px;
+            max-height: 85vh;
             overflow-y: auto;
             border-top: 4px solid var(--accent-color);
         }
 
+        .modal-content h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: var(--text-secondary);
+            font-size: 13px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 6px;
             background: var(--input-bg);
             color: var(--text-primary);
+            font-size: 14px;
         }
 
         input:focus, select:focus, textarea:focus {
@@ -425,10 +461,11 @@
         .remaining-badge {
             background: #d4edda;
             color: #155724;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            margin-right: 5px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            margin-right: 3px;
+            white-space: nowrap;
         }
 
         .remaining-low {
@@ -436,73 +473,147 @@
             color: #721c24;
         }
 
-        /* تصميم متجاوب */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                align-items: stretch;
+        .export-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* تحسينات خاصة للهاتف */
+        @media (max-width: 600px) {
+            .header {
+                padding: 8px 10px;
             }
 
-            .header-left, .header-right {
-                justify-content: center;
+            .logo-box {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
             }
 
-            .header-right {
-                justify-content: space-around;
+            .logo-text h3 {
+                font-size: 11px;
+            }
+
+            .logo-text span {
+                font-size: 7px;
             }
 
             .theme-toggle, .logout-btn, .change-password-btn {
-                padding: 6px 10px;
-                font-size: 12px;
+                padding: 5px 6px;
+                font-size: 10px;
+            }
+
+            .notification-btn {
+                padding: 5px 8px;
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 0 8px;
+                margin: 10px auto;
             }
 
             .tabs {
-                justify-content: center;
+                padding: 4px;
+                gap: 3px;
             }
 
             .tab {
-                padding: 8px 15px;
-                font-size: 13px;
+                padding: 6px 8px;
+                font-size: 11px;
+                min-width: 70px;
             }
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
 
-            .section {
-                padding: 15px;
-            }
-
-            .btn {
-                padding: 10px 15px;
-                width: 100%;
-                margin: 3px 0;
-            }
-
-            .employee-card {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo-box {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-
-            .logo-text h3 {
-                font-size: 14px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .stat-card {
+                padding: 12px 8px;
             }
 
             .stat-value {
-                font-size: 28px;
+                font-size: 22px;
             }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            .section {
+                padding: 12px;
+            }
+
+            .section-title {
+                font-size: 14px;
+            }
+
+            .section-title h2 {
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 8px 10px;
+                font-size: 11px;
+                width: auto;
+            }
+
+            .employee-stats {
+                gap: 8px;
+                font-size: 10px;
+            }
+
+            .modal-content {
+                padding: 18px 12px;
+                max-width: 95%;
+            }
+
+            input, select, textarea {
+                padding: 10px;
+                font-size: 16px; /* لمنع الزووم في iOS */
+            }
+        }
+
+        /* هواتف صغيرة جداً */
+        @media (max-width: 380px) {
+            .header-right {
+                gap: 3px;
+            }
+
+            .theme-toggle, .logout-btn, .change-password-btn {
+                padding: 4px 5px;
+                font-size: 9px;
+            }
+
+            #userName {
+                max-width: 60px;
+                font-size: 10px !important;
+            }
+
+            .tab {
+                padding: 5px 6px;
+                font-size: 10px;
+                min-width: 60px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .btn {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+        }
+
+        /* منع التمرير الأفقي */
+        .no-scroll {
+            overflow-x: hidden;
         }
     </style>
 </head>
@@ -519,7 +630,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <span id="userName" style="font-size: 14px;"></span>
+                <span id="userName"></span>
                 
                 <div class="notification-wrapper">
                     <button class="notification-btn" onclick="toggleNotifications()">
@@ -534,23 +645,23 @@
                 </div>
                 
                 <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
-                <button class="change-password-btn" onclick="openChangePasswordModal()">🔐 تغيير كلمة المرور</button>
-                <button class="logout-btn" onclick="logout()">🚪 تسجيل الخروج</button>
+                <button class="change-password-btn" onclick="openChangePasswordModal()">🔐</button>
+                <button class="logout-btn" onclick="logout()">🚪</button>
             </div>
         </div>
     </div>
 
     <div class="container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('requests')">📋 طلبات الإجازات</button>
-            <button class="tab" onclick="switchTab('employees')">👥 إدارة الموظفين</button>
+            <button class="tab active" onclick="switchTab('requests')">📋 الطلبات</button>
+            <button class="tab" onclick="switchTab('employees')">👥 الموظفين</button>
             <button class="tab" onclick="switchTab('missions')">📋 المأموريات</button>
         </div>
 
         <div id="requestsTab" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">إجمالي الطلبات</div>
+                    <div class="stat-label">الإجمالي</div>
                     <div class="stat-value" id="totalRequests">0</div>
                 </div>
                 <div class="stat-card">
@@ -569,16 +680,16 @@
 
             <div class="section">
                 <div class="section-title">
-                    <h2>جميع طلبات الإجازات</h2>
-                    <button class="btn btn-success" onclick="exportToExcel('requests')">📊 تصدير إلى Excel</button>
+                    <h2>جميع الطلبات</h2>
+                    <button class="btn btn-success" onclick="exportToExcel('requests')">📊 Excel</button>
                 </div>
-                <div style="overflow-x: auto;">
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                     <table class="requests-table">
                         <thead>
                             <tr>
                                 <th>الموظف</th>
                                 <th>النوع</th>
-                                <th>تاريخ البدء</th>
+                                <th>التاريخ</th>
                                 <th>الأيام</th>
                                 <th>الحالة</th>
                                 <th>إجراءات</th>
@@ -594,9 +705,9 @@
             <div class="section">
                 <div class="section-title">
                     <h2>قائمة الموظفين</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-info" onclick="exportToExcel('employees')">📊 تصدير إلى Excel</button>
-                        <button class="btn btn-success" onclick="openAddEmployeeModal()">➕ إضافة موظف</button>
+                    <div class="export-buttons">
+                        <button class="btn btn-info" onclick="exportToExcel('employees')">📊</button>
+                        <button class="btn btn-success" onclick="openAddEmployeeModal()">➕</button>
                     </div>
                 </div>
                 <div id="employeesList"></div>
@@ -606,13 +717,13 @@
         <div id="missionsTab" class="tab-content">
             <div class="section">
                 <div class="section-title">
-                    <h2>إدارة المأموريات</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-info" onclick="exportToExcel('missions')">📊 تصدير إلى Excel</button>
-                        <button class="btn btn-success" onclick="openAddMissionModal()">➕ إضافة مأمورية</button>
+                    <h2>المأموريات</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-info" onclick="exportToExcel('missions')">📊</button>
+                        <button class="btn btn-success" onclick="openAddMissionModal()">➕</button>
                     </div>
                 </div>
-                <div style="overflow-x: auto;">
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                     <table class="missions-table">
                         <thead>
                             <tr>
@@ -621,7 +732,7 @@
                                 <th>من</th>
                                 <th>إلى</th>
                                 <th>الحالة</th>
-                                <th>إجراءات</th>
+                                <th>حذف</th>
                             </tr>
                         </thead>
                         <tbody id="missionsTableBody"></tbody>
@@ -634,7 +745,7 @@
     <!-- Modal تغيير كلمة المرور -->
     <div id="changePasswordModal" class="modal">
         <div class="modal-content">
-            <h2 style="color: var(--text-primary); margin-bottom: 20px;">🔐 تغيير كلمة المرور</h2>
+            <h2 style="color: var(--text-primary);">🔐 تغيير كلمة المرور</h2>
             <form id="changePasswordForm">
                 <div class="form-group">
                     <label>كلمة المرور الحالية</label>
@@ -645,11 +756,11 @@
                     <input type="password" id="newPassword" required>
                 </div>
                 <div class="form-group">
-                    <label>تأكيد كلمة المرور الجديدة</label>
+                    <label>تأكيد كلمة المرور</label>
                     <input type="password" id="confirmPassword" required>
                 </div>
-                <button type="submit" class="btn btn-success" style="width: 100%;">تغيير كلمة المرور</button>
-                <button type="button" class="btn btn-danger" onclick="closeChangePasswordModal()" style="width: 100%; margin-top: 10px;">إلغاء</button>
+                <button type="submit" class="btn btn-success" style="width: 100%;">تغيير</button>
+                <button type="button" class="btn btn-danger" onclick="closeChangePasswordModal()" style="width: 100%; margin-top: 8px;">إلغاء</button>
             </form>
         </div>
     </div>
@@ -657,7 +768,7 @@
     <!-- Modal إضافة موظف -->
     <div id="addEmployeeModal" class="modal">
         <div class="modal-content">
-            <h2 style="color: var(--text-primary); margin-bottom: 20px;">➕ إضافة موظف جديد</h2>
+            <h2 style="color: var(--text-primary);">➕ إضافة موظف</h2>
             <form id="addEmployeeForm">
                 <div class="form-group">
                     <label>اسم الموظف</label>
@@ -668,11 +779,11 @@
                     <input type="password" id="empPassword" required>
                 </div>
                 <div class="form-group">
-                    <label>الرصيد السنوي (أيام)</label>
+                    <label>الرصيد السنوي</label>
                     <input type="number" id="empTotalDays" value="30" min="1" max="365">
                 </div>
                 <button type="submit" class="btn btn-success" style="width: 100%;">إضافة</button>
-                <button type="button" class="btn btn-danger" onclick="closeAddEmployeeModal()" style="width: 100%; margin-top: 10px;">إلغاء</button>
+                <button type="button" class="btn btn-danger" onclick="closeAddEmployeeModal()" style="width: 100%; margin-top: 8px;">إلغاء</button>
             </form>
         </div>
     </div>
@@ -680,14 +791,14 @@
     <!-- Modal إضافة مأمورية -->
     <div id="addMissionModal" class="modal">
         <div class="modal-content">
-            <h2 style="color: var(--text-primary); margin-bottom: 20px;">📋 إضافة مأمورية جديدة</h2>
+            <h2 style="color: var(--text-primary);">📋 إضافة مأمورية</h2>
             <form id="addMissionForm">
                 <div class="form-group">
                     <label>الموظف</label>
                     <select id="missionEmployee" required></select>
                 </div>
                 <div class="form-group">
-                    <label>نوع المأمورية</label>
+                    <label>النوع</label>
                     <select id="missionType" required>
                         <option value="داخلية">داخلية</option>
                         <option value="خارجية">خارجية</option>
@@ -705,10 +816,10 @@
                 </div>
                 <div class="form-group">
                     <label>الوصف</label>
-                    <textarea id="missionDescription" rows="3"></textarea>
+                    <textarea id="missionDescription" rows="2"></textarea>
                 </div>
                 <button type="submit" class="btn btn-success" style="width: 100%;">إضافة</button>
-                <button type="button" class="btn btn-danger" onclick="closeAddMissionModal()" style="width: 100%; margin-top: 10px;">إلغاء</button>
+                <button type="button" class="btn btn-danger" onclick="closeAddMissionModal()" style="width: 100%; margin-top: 8px;">إلغاء</button>
             </form>
         </div>
     </div>
@@ -796,14 +907,14 @@
             const dropdown = document.getElementById('notificationDropdown')
             
             if (notifications.length === 0) {
-                dropdown.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">لا توجد إشعارات</div>'
+                dropdown.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted);">لا توجد إشعارات</div>'
                 return
             }
             
             dropdown.innerHTML = notifications.slice(0, 20).map(n => `
                 <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationAsRead(${n.id})">
                     <div style="font-weight: 500;">${n.title}</div>
-                    <div style="font-size: 13px; margin-top: 5px;">${n.message}</div>
+                    <div style="font-size: 12px; margin-top: 3px;">${n.message}</div>
                     <div class="notification-time">${formatTime(n.createdAt)}</div>
                 </div>
             `).join('')
@@ -818,8 +929,8 @@
             const days = Math.floor(diff / 86400000)
             
             if (minutes < 1) return 'الآن'
-            if (minutes < 60) return `قبل ${minutes} دقيقة`
-            if (hours < 24) return `قبل ${hours} ساعة`
+            if (minutes < 60) return `قبل ${minutes} د`
+            if (hours < 24) return `قبل ${hours} س`
             if (days < 7) return `قبل ${days} يوم`
             return date.toLocaleDateString('ar-SA')
         }
@@ -852,8 +963,8 @@
             if (newCount > lastRequestCount) {
                 const diff = newCount - lastRequestCount
                 addNotification(
-                    '📋 طلبات إجازة جديدة',
-                    `لديك ${diff} طلب إجازة ${diff === 1 ? 'جديد' : 'جديدة'} في انتظار الموافقة`,
+                    '📋 طلبات جديدة',
+                    `${diff} طلب في انتظار الموافقة`,
                     'request'
                 )
             }
@@ -873,7 +984,7 @@
                 window.location.href = 'employee.html'
                 return
             }
-            document.getElementById('userName').textContent = `👨‍💼 ${currentUser.name}`
+            document.getElementById('userName').textContent = `👨‍💼 ${currentUser.name.split(' ')[0]}`
             loadNotifications()
             loadAllData()
             
@@ -886,7 +997,6 @@
             await Promise.all([loadAllRequests(), loadAllEmployees(), loadAllMissions()])
         }
 
-        // ============ تحميل الطلبات ============
         async function loadAllRequests(silent = false) {
             const { data } = await supabase
                 .from('requests')
@@ -906,7 +1016,7 @@
             
             const tbody = document.getElementById('requestsTableBody')
             if (allRequests.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">لا توجد طلبات</td></tr>'
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">لا توجد طلبات</td></tr>'
                 return
             }
             
@@ -918,9 +1028,7 @@
                     <tr>
                         <td>
                             ${employee.name || 'غير معروف'}
-                            <span class="remaining-badge ${remaining < 5 ? 'remaining-low' : ''}">
-                                ${remaining}
-                            </span>
+                            <span class="remaining-badge ${remaining < 5 ? 'remaining-low' : ''}">${remaining}</span>
                         </td>
                         <td>${req.type}</td>
                         <td>${req.start_date}</td>
@@ -962,7 +1070,7 @@
                 await supabase.from('employees').update({ used: newUsed }).eq('id', request.employee_id)
             }
             
-            addNotification('✅ تم قبول الطلب', `تم قبول طلب ${request.employees?.name || 'الموظف'}`, 'approved')
+            addNotification('✅ تم قبول الطلب', `طلب ${request.employees?.name || 'الموظف'}`, 'approved')
             loadAllData()
         }
 
@@ -985,18 +1093,17 @@
             }
             
             await supabase.from('requests').update({ status: 'pending' }).eq('id', id)
-            addNotification('🔄 تم إعادة تعيين طلب', 'تم إعادة طلب إلى قيد الانتظار', 'reset')
+            addNotification('🔄 إعادة تعيين', 'تم إعادة طلب للمراجعة', 'reset')
             loadAllData()
         }
 
-        // ============ تحميل الموظفين ============
         async function loadAllEmployees() {
             const { data } = await supabase.from('employees').select('*').order('name')
             allEmployees = data || []
             
             const container = document.getElementById('employeesList')
             if (allEmployees.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px;">لا يوجد موظفين</div>'
+                container.innerHTML = '<div style="text-align: center; padding: 30px;">لا يوجد موظفين</div>'
                 return
             }
             
@@ -1007,11 +1114,9 @@
                         <div class="employee-info">
                             <h3>👤 ${emp.name} ${emp.role === 'admin' ? '(مدير)' : ''}</h3>
                             <div class="employee-stats">
-                                <span>📊 الإجمالي: ${emp.total_annual || 30}</span>
-                                <span>✅ المستخدم: ${emp.used || 0}</span>
-                                <span class="remaining-badge ${remaining < 5 ? 'remaining-low' : ''}">
-                                    ⏳ المتبقي: ${remaining}
-                                </span>
+                                <span>📊 ${emp.total_annual || 30}</span>
+                                <span>✅ ${emp.used || 0}</span>
+                                <span class="remaining-badge ${remaining < 5 ? 'remaining-low' : ''}">⏳ ${remaining}</span>
                             </div>
                         </div>
                         <div class="employee-actions">
@@ -1066,7 +1171,6 @@
             alert('✅ تم تغيير كلمة المرور بنجاح')
         }
 
-        // ============ تحميل المأموريات ============
         async function loadAllMissions() {
             const { data } = await supabase
                 .from('missions')
@@ -1077,7 +1181,7 @@
             
             const tbody = document.getElementById('missionsTableBody')
             if (allMissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">لا توجد مأموريات</td></tr>'
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">لا توجد مأموريات</td></tr>'
                 return
             }
             
@@ -1089,9 +1193,7 @@
                         <td>${m.start_date}</td>
                         <td>${m.end_date}</td>
                         <td><span class="status-badge status-approved">${m.status === 'active' ? '✅ نشطة' : '✅ مكتملة'}</span></td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteMission('${m.id}')">🗑️</button>
-                        </td>
+                        <td><button class="btn btn-danger" onclick="deleteMission('${m.id}')">🗑️</button></td>
                     </tr>
                 `
             }).join('')
@@ -1103,7 +1205,6 @@
             loadAllMissions()
         }
 
-        // ============ تغيير كلمة المرور ============
         window.openChangePasswordModal = () => {
             document.getElementById('changePasswordModal').style.display = 'flex'
         }
@@ -1144,7 +1245,6 @@
             closeChangePasswordModal()
         })
 
-        // ============ إضافة موظف ============
         window.openAddEmployeeModal = () => {
             document.getElementById('addEmployeeModal').style.display = 'flex'
         }
@@ -1183,7 +1283,6 @@
             }
         })
 
-        // ============ إضافة مأمورية ============
         window.openAddMissionModal = () => {
             document.getElementById('addMissionModal').style.display = 'flex'
         }
@@ -1225,7 +1324,6 @@
             }
         })
 
-        // ============ التبويبات ============
         window.switchTab = (tabName) => {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
             event.target.classList.add('active')
@@ -1235,7 +1333,6 @@
             document.getElementById('missionsTab').classList.toggle('active', tabName === 'missions')
         }
 
-        // ============ تصدير Excel ============
         window.exportToExcel = (type) => {
             let data = []
             let fileName = ''
@@ -1281,7 +1378,6 @@
             XLSX.writeFile(wb, fileName)
         }
 
-        // ============ تسجيل الخروج ============
         window.logout = () => {
             localStorage.removeItem('currentUser')
             window.location.href = 'index.html'
