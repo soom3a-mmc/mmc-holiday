@@ -2,344 +2,148 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#667eea">
-    <title>لوحة الموظف - نظام الإجازات</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>MMC - لوحة الموظف</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-
-        /* Light Mode */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, sans-serif; }
         :root {
-            --bg-primary: #f5f5f5;
-            --bg-secondary: #ffffff;
-            --text-primary: #333333;
-            --text-secondary: #555555;
-            --text-muted: #666666;
-            --border-color: #e0e0e0;
-            --input-bg: #ffffff;
-            --shadow: rgba(0,0,0,0.08);
-            --gradient-start: #667eea;
-            --gradient-end: #764ba2;
-            --card-bg: #ffffff;
+            --bg: #f4f6f8; --card: #fff; --text: #1a1a2e; --muted: #667085; --border: #dde2ea;
+            --input: #fff; --shadow: rgba(18,24,38,.1); --primary: #1a1a2e; --primary-2: #2d2d4e;
+            --accent: #c9a84c; --success: #198754; --danger: #dc3545; --warning: #ffc107;
         }
-
-        /* Dark Mode */
         [data-theme="dark"] {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-muted: #888888;
-            --border-color: #2a2a4a;
-            --input-bg: #0f3460;
-            --shadow: rgba(0,0,0,0.3);
-            --gradient-start: #0f3460;
-            --gradient-end: #16213e;
-            --card-bg: #16213e;
+            --bg: #0d0d1a; --card: #17172b; --text: #f0f2f5; --muted: #a4a9b4; --border: #2b2f48;
+            --input: #101020; --shadow: rgba(0,0,0,.4); --primary: #0d0d1a; --primary-2: #232344;
+            --accent: #d4b85c;
         }
-
-        body {
-            background: var(--bg-primary);
-            min-height: 100vh;
-        }
-
+        body { min-height: 100vh; background: var(--bg); color: var(--text); }
         .header {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            color: white;
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100; background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #fff; border-bottom: 3px solid var(--accent); padding: 12px 15px;
         }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+        .header-content { max-width: 1200px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .logo { width: 42px; height: 42px; display: grid; place-items: center; border: 1.5px solid var(--accent); border-radius: 9px; color: var(--accent); font-weight: 800; }
+        .brand h1 { font-size: 15px; line-height: 1.2; }
+        .brand span { display: block; color: var(--accent); font-size: 9px; letter-spacing: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+        .header-btn {
+            border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.12); color: #fff;
+            padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px;
         }
-
-        .header-right {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .theme-toggle, .logout-btn, .change-password-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
+        #userName { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+        .container { max-width: 1200px; margin: 18px auto; padding: 0 14px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(130px, 1fr)); gap: 14px; margin-bottom: 16px; }
         .stat-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 5px 15px var(--shadow);
+            background: var(--card); border-radius: 10px; padding: 18px 12px; text-align: center;
+            box-shadow: 0 4px 14px var(--shadow); border-top: 3px solid var(--accent);
         }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--gradient-start);
-            margin: 10px 0;
+        .stat-label { color: var(--muted); font-size: 13px; }
+        .stat-value { color: var(--accent); font-size: 32px; font-weight: 850; margin: 5px 0; }
+        .stat-value.low { color: var(--danger); }
+        .tabs {
+            display: flex; gap: 7px; flex-wrap: wrap; background: var(--card); padding: 8px; border-radius: 10px;
+            box-shadow: 0 4px 14px var(--shadow); margin-bottom: 14px;
         }
-
-        .stat-label {
-            color: var(--text-secondary);
+        .tab {
+            flex: 1 0 170px; border: 0; background: transparent; color: var(--muted); padding: 10px 12px;
+            border-radius: 8px; cursor: pointer; font-weight: 650;
         }
-
+        .tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px var(--shadow);
+            background: var(--card); border-radius: 10px; box-shadow: 0 4px 14px var(--shadow);
+            padding: 18px; margin-bottom: 16px;
         }
-
-        .section-title {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-        }
-
+        .section-title { font-size: 18px; margin-bottom: 16px; color: var(--text); }
+        .form-row { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 14px; align-items: end; }
+        label { display: block; margin-bottom: 6px; color: var(--muted); font-weight: 650; font-size: 13px; }
         input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--input-bg);
-            color: var(--text-primary);
+            width: 100%; border: 1.5px solid var(--border); border-radius: 8px; background: var(--input); color: var(--text);
+            padding: 11px 12px; font-size: 15px;
         }
-
+        input:focus, select:focus { outline: none; border-color: var(--accent); }
         .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            color: white;
+            border: 0; border-radius: 8px; padding: 11px 14px; cursor: pointer; font-size: 14px; font-weight: 750;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
-
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; border-bottom: 3px solid var(--accent); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-secondary { background: #667085; color: #fff; }
+        .cards { display: grid; gap: 12px; }
         .request-card, .mission-card {
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            background: var(--card-bg);
+            border: 1px solid var(--border); border-radius: 10px; padding: 15px; background: var(--card);
         }
-
-        .request-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
+        .card-header { display: flex; justify-content: space-between; gap: 10px; align-items: start; margin-bottom: 10px; flex-wrap: wrap; }
+        .card-title { font-weight: 800; color: var(--text); }
+        .card-meta { display: grid; gap: 5px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 750; }
         .status-pending { background: #fff3cd; color: #856404; }
         .status-approved { background: #d4edda; color: #155724; }
         .status-rejected { background: #f8d7da; color: #721c24; }
-
+        .empty { text-align: center; padding: 36px; color: var(--muted); }
+        .hint { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.7; }
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 15px;
+            display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.55);
+            align-items: center; justify-content: center; padding: 14px;
         }
-
+        .modal.show { display: flex; }
         .modal-content {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 450px;
+            width: min(100%, 440px); max-height: 90vh; overflow-y: auto; background: var(--card);
+            border-radius: 12px; padding: 20px; border-top: 4px solid var(--accent);
         }
-
-        .form-group {
-            margin-bottom: 20px;
+        .modal-content h2 { font-size: 18px; margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        @media (max-width: 820px) {
+            .form-row { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .header-actions { justify-content: center; }
         }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: var(--card-bg);
-            padding: 8px;
-            border-radius: 12px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-radius: 8px;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* تصميم متجاوب */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .header-right {
-                justify-content: center;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 20px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 560px) {
+            .header-content { align-items: stretch; }
+            .stats-grid, .form-row { grid-template-columns: 1fr; }
+            .tab { flex-basis: 100%; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-    <div class="header-content">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div style="
-                width: 45px;
-                height: 45px;
-                background: rgba(255,255,255,0.15);
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 22px;
-                font-weight: bold;
-                color: var(--accent-color, #c9a84c);
-                border: 1.5px solid var(--accent-color, #c9a84c);
-            ">MMC</div>
-            <div>
-                <div style="font-size: 16px; font-weight: bold;">MURTADA MAAZ</div>
-                <div style="font-size: 11px; opacity: 0.9; color: var(--accent-color, #c9a84c);">CONSULTANCY</div>
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="logo">MMC</div>
+                <h1>MURTADA MAAZ <span>CONSULTANCY</span></h1>
+            </div>
+            <div class="header-actions">
+                <span id="userName"></span>
+                <button class="header-btn" type="button" id="themeToggle">🌙</button>
+                <button class="header-btn" type="button" id="openChangePassword">🔐 كلمة المرور</button>
+                <button class="header-btn" type="button" id="logoutButton">🚪 خروج</button>
             </div>
         </div>
-        <div class="header-right">
-            <span id="userName" style="font-size: 14px;"></span>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
-            <button class="change-password-btn" onclick="openChangePasswordModal()">🔐 تغيير كلمة المرور</button>
-            <button class="logout-btn" onclick="logout()">🚪 تسجيل الخروج</button>
-        </div>
-    </div>
+    </header>
 
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">الإجمالي السنوي</div>
-                <div class="stat-value" id="totalDays">30</div>
-                <div class="stat-label">يوم</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">المستخدم</div>
-                <div class="stat-value" id="usedDays">0</div>
-                <div class="stat-label">يوم</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">المتبقي</div>
-                <div class="stat-value" id="remainingDays">30</div>
-                <div class="stat-label">يوم</div>
-            </div>
-        </div>
+    <main class="container">
+        <section class="stats-grid" aria-label="رصيد الإجازات">
+            <div class="stat-card"><div class="stat-label">الإجمالي السنوي</div><div class="stat-value" id="totalDays">30</div><div class="stat-label">يوم</div></div>
+            <div class="stat-card"><div class="stat-label">المستخدم</div><div class="stat-value" id="usedDays">0</div><div class="stat-label">يوم</div></div>
+            <div class="stat-card"><div class="stat-label">المتبقي</div><div class="stat-value" id="remainingDays">30</div><div class="stat-label">يوم</div></div>
+        </section>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('vacations')">📋 طلبات الإجازات</button>
-            <button class="tab" onclick="switchTab('missions')">📋 المأموريات</button>
-        </div>
+        <nav class="tabs" aria-label="أقسام لوحة الموظف">
+            <button class="tab active" type="button" data-tab="vacations">طلبات الإجازات</button>
+            <button class="tab" type="button" data-tab="missions">المأموريات</button>
+        </nav>
 
-        <!-- تبويب الإجازات -->
-        <div id="vacationsTab" class="tab-content active">
+        <section id="vacationsTab" class="tab-content active">
             <div class="section">
-                <h2 class="section-title">📝 تقديم طلب إجازة جديد</h2>
+                <h2 class="section-title">تقديم طلب إجازة جديد</h2>
                 <form id="requestForm">
                     <div class="form-row">
                         <div>
-                            <label>نوع الإجازة</label>
+                            <label for="leaveType">نوع الإجازة</label>
                             <select id="leaveType" required>
                                 <option value="">اختر نوع الإجازة</option>
                                 <option value="سنوية">سنوية</option>
@@ -348,290 +152,280 @@
                             </select>
                         </div>
                         <div>
-                            <label>تاريخ البدء</label>
+                            <label for="startDate">تاريخ البدء</label>
                             <input type="date" id="startDate" required>
                         </div>
                         <div>
-                            <label>عدد الأيام</label>
+                            <label for="days">عدد الأيام</label>
                             <input type="number" id="days" min="0.5" step="0.5" required>
                         </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary" id="submitRequest">تقديم الطلب</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn">تقديم الطلب</button>
+                    <div class="hint" id="endDateHint">سيظهر تاريخ نهاية الإجازة بعد إدخال تاريخ البدء وعدد الأيام.</div>
                 </form>
             </div>
 
             <div class="section">
-                <h2 class="section-title">📋 طلباتي السابقة</h2>
-                <div id="requestsList"></div>
+                <h2 class="section-title">طلباتي السابقة</h2>
+                <div id="requestsList" class="cards"></div>
             </div>
-        </div>
+        </section>
 
-        <!-- تبويب المأموريات -->
-        <div id="missionsTab" class="tab-content">
+        <section id="missionsTab" class="tab-content">
             <div class="section">
-                <h2 class="section-title">📋 مأمورياتي</h2>
-                <div id="missionsList"></div>
+                <h2 class="section-title">مأمورياتي</h2>
+                <div id="missionsList" class="cards"></div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <!-- Modal تغيير كلمة المرور -->
     <div id="changePasswordModal" class="modal">
         <div class="modal-content">
-            <h2 style="color: var(--text-primary); margin-bottom: 20px;">🔐 تغيير كلمة المرور</h2>
+            <h2>تغيير كلمة المرور</h2>
             <form id="changePasswordForm">
-                <div class="form-group">
-                    <label>كلمة المرور الحالية</label>
-                    <input type="password" id="currentPassword" required>
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور الجديدة</label>
-                    <input type="password" id="newPassword" required>
-                </div>
-                <div class="form-group">
-                    <label>تأكيد كلمة المرور الجديدة</label>
-                    <input type="password" id="confirmPassword" required>
-                </div>
-                <button type="submit" class="btn" style="width: 100%;">تغيير كلمة المرور</button>
-                <button type="button" class="btn" onclick="closeChangePasswordModal()" style="width: 100%; margin-top: 10px; background: #dc3545;">إلغاء</button>
+                <div class="form-group"><label>كلمة المرور الحالية</label><input type="password" id="currentPassword" required></div>
+                <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="newPassword" minlength="3" required></div>
+                <div class="form-group"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="confirmPassword" minlength="3" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%">حفظ</button>
+                <button type="button" class="btn btn-danger" id="closeChangePassword" style="width:100%; margin-top:8px">إلغاء</button>
             </form>
         </div>
     </div>
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-        
-        const SUPABASE_URL = 'https://ueszjhtztdlqaduogzog.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlc3pqaHR6dGRscWFkdW9nem9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDkxNDksImV4cCI6MjA5MjE4NTE0OX0.euN5Uijw9WXt2aGuk-sNWMMZ78IIiuxVOBBvuzjobxk'
-        
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-        let currentUser = null
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-        // ============ Dark Mode ============
+        const SUPABASE_URL = "https://ueszjhtztdlqaduogzog.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlc3pqaHR6dGRscWFkdW9nem9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDkxNDksImV4cCI6MjA5MjE4NTE0OX0.euN5Uijw9WXt2aGuk-sNWMMZ78IIiuxVOBBvuzjobxk";
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let myRequests = [];
+
+        const $ = (id) => document.getElementById(id);
+        const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+        const statusText = { pending: "قيد الانتظار", approved: "مقبول", rejected: "مرفوض" };
+
         function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light'
-            document.documentElement.setAttribute('data-theme', savedTheme)
-            updateThemeIcon(savedTheme)
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme')
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
-            document.documentElement.setAttribute('data-theme', newTheme)
-            localStorage.setItem('theme', newTheme)
-            updateThemeIcon(newTheme)
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            updateThemeIcon(savedTheme);
         }
 
         function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeToggle')
-            icon.textContent = theme === 'dark' ? '☀️' : '🌙'
-            document.querySelector('meta[name="theme-color"]').content = 
-                theme === 'dark' ? '#16213e' : '#667eea'
+            $("themeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
+            document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#0d0d1a" : "#1a1a2e";
         }
 
-        window.toggleTheme = toggleTheme
-        initTheme()
+        function todayIso() {
+            const date = new Date();
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+            return date.toISOString().slice(0, 10);
+        }
 
-        // ============ التحقق من الصلاحية ============
+        function addDays(startDate, days) {
+            const date = new Date(startDate + "T00:00:00");
+            date.setDate(date.getDate() + Math.ceil(Number(days)) - 1);
+            return date.toISOString().slice(0, 10);
+        }
+
+        function dateRangesOverlap(startA, daysA, startB, daysB) {
+            const a1 = new Date(startA + "T00:00:00");
+            const a2 = new Date(addDays(startA, daysA) + "T00:00:00");
+            const b1 = new Date(startB + "T00:00:00");
+            const b2 = new Date(addDays(startB, daysB) + "T00:00:00");
+            return a1 <= b2 && b1 <= a2;
+        }
+
+        function openModal(id) { $(id).classList.add("show"); }
+        function closeModal(id) { $(id).classList.remove("show"); const form = $(id).querySelector("form"); if (form) form.reset(); }
+
         function checkAuth() {
-            const savedUser = localStorage.getItem('currentUser')
-            if (!savedUser) {
-                window.location.href = 'index.html'
-                return
+            try {
+                currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+            } catch {
+                currentUser = null;
             }
-            currentUser = JSON.parse(savedUser)
-            if (currentUser.role === 'admin') {
-                window.location.href = 'admin.html'
-                return
-            }
-            document.getElementById('userName').textContent = `👤 ${currentUser.name}`
-            updateStats()
-            loadMyRequests()
-            loadMyMissions()
+            if (!currentUser) return window.location.href = "index.html";
+            if (currentUser.role === "admin") return window.location.href = "admin.html";
+            $("userName").textContent = `الموظف: ${currentUser.name}`;
+            $("startDate").min = todayIso();
+            loadPageData();
+        }
+
+        async function loadPageData() {
+            await Promise.all([updateStats(), loadMyRequests(), loadMyMissions()]);
         }
 
         async function updateStats() {
-            const { data } = await supabase
-                .from('employees')
-                .select('total_annual, used')
-                .eq('id', currentUser.id)
-                .single()
-            
-            if (data) {
-                currentUser.total_annual = data.total_annual
-                currentUser.used = data.used
-                localStorage.setItem('currentUser', JSON.stringify(currentUser))
-            }
-            
-            const total = currentUser.total_annual || 30
-            const used = currentUser.used || 0
-            const remaining = total - used
-            
-            document.getElementById('totalDays').textContent = total
-            document.getElementById('usedDays').textContent = used
-            document.getElementById('remainingDays').textContent = remaining
-            
-            const remainingEl = document.getElementById('remainingDays')
-            remainingEl.style.color = remaining < 5 ? '#dc3545' : 'var(--gradient-start)'
+            const { data, error } = await supabase.from("employees").select("total_annual, used").eq("id", currentUser.id).single();
+            if (error) return alert("فشل تحميل الرصيد: " + error.message);
+            currentUser.total_annual = data.total_annual || 30;
+            currentUser.used = data.used || 0;
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            const total = currentUser.total_annual;
+            const used = currentUser.used;
+            const remaining = total - used;
+            $("totalDays").textContent = total;
+            $("usedDays").textContent = used;
+            $("remainingDays").textContent = remaining;
+            $("remainingDays").classList.toggle("low", remaining < 5);
         }
 
-        // ============ طلبات الإجازات ============
-        document.getElementById('requestForm').addEventListener('submit', async (e) => {
-            e.preventDefault()
-            
-            const type = document.getElementById('leaveType').value
-            const startDate = document.getElementById('startDate').value
-            const days = parseFloat(document.getElementById('days').value)
-            
-            const remaining = (currentUser.total_annual || 30) - (currentUser.used || 0)
-            if (days > remaining) {
-                alert(`⚠️ رصيدك المتبقي (${remaining}) يوم فقط`)
-                return
+        function updateEndDateHint() {
+            const startDate = $("startDate").value;
+            const days = Number.parseFloat($("days").value);
+            if (!startDate || !Number.isFinite(days) || days <= 0) {
+                $("endDateHint").textContent = "سيظهر تاريخ نهاية الإجازة بعد إدخال تاريخ البدء وعدد الأيام.";
+                return;
             }
-            
-            const { error } = await supabase
-                .from('requests')
-                .insert([{
-                    employee_id: currentUser.id,
-                    type, start_date: startDate, days,
-                    status: 'pending'
-                }])
-            
-            if (error) {
-                alert('❌ فشل تقديم الطلب: ' + error.message)
-            } else {
-                alert('✅ تم تقديم الطلب بنجاح')
-                document.getElementById('requestForm').reset()
-                loadMyRequests()
-            }
-        })
+            $("endDateHint").textContent = `تاريخ نهاية الإجازة المتوقع: ${addDays(startDate, days)}`;
+        }
 
         async function loadMyRequests() {
-            const { data } = await supabase
-                .from('requests')
-                .select('*')
-                .eq('employee_id', currentUser.id)
-                .order('created_at', { ascending: false })
-            
-            const container = document.getElementById('requestsList')
-            const requests = data || []
-            
-            if (requests.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">📭 لا توجد طلبات</div>'
-                return
-            }
-            
-            container.innerHTML = requests.map(req => {
-                const statusText = {
-                    'pending': '⏳ قيد الانتظار',
-                    'approved': '✅ مقبول',
-                    'rejected': '❌ مرفوض'
-                }[req.status] || req.status
-                
-                return `
-                    <div class="request-card">
-                        <div class="request-header">
-                            <strong style="color: var(--text-primary);">${req.type}</strong>
-                            <span class="status status-${req.status}">${statusText}</span>
-                        </div>
-                        <div style="color: var(--text-secondary);">📅 تاريخ البدء: ${req.start_date}</div>
-                        <div style="color: var(--text-secondary);">⏱️ عدد الأيام: ${req.days} يوم</div>
-                        <div style="color: var(--text-muted); font-size: 12px; margin-top: 10px;">
-                            🕐 ${new Date(req.created_at).toLocaleDateString('ar-SA')}
-                        </div>
-                    </div>
-                `
-            }).join('')
+            const { data, error } = await supabase
+                .from("requests")
+                .select("*")
+                .eq("employee_id", currentUser.id)
+                .order("created_at", { ascending: false });
+            if (error) return alert("فشل تحميل الطلبات: " + error.message);
+            myRequests = data || [];
+            renderRequests();
         }
 
-        // ============ المأموريات ============
+        function renderRequests() {
+            const container = $("requestsList");
+            if (myRequests.length === 0) {
+                container.innerHTML = '<div class="empty">لا توجد طلبات حتى الآن</div>';
+                return;
+            }
+            container.innerHTML = myRequests.map((req) => {
+                const endDate = addDays(req.start_date, req.days);
+                return `
+                    <article class="request-card">
+                        <div class="card-header">
+                            <div class="card-title">${escapeHtml(req.type)}</div>
+                            <span class="badge status-${escapeHtml(req.status)}">${statusText[req.status] || escapeHtml(req.status)}</span>
+                        </div>
+                        <div class="card-meta">
+                            <div>تاريخ البدء: ${escapeHtml(req.start_date)}</div>
+                            <div>تاريخ النهاية: ${escapeHtml(endDate)}</div>
+                            <div>عدد الأيام: ${escapeHtml(req.days)} يوم</div>
+                            <div>تاريخ التقديم: ${new Date(req.created_at).toLocaleDateString("ar-SA")}</div>
+                        </div>
+                        ${req.status === "pending" ? `<button class="btn btn-danger" style="margin-top:12px" data-action="cancel-request" data-id="${escapeHtml(req.id)}">إلغاء الطلب</button>` : ""}
+                    </article>
+                `;
+            }).join("");
+        }
+
+        async function cancelRequest(id) {
+            if (!confirm("هل تريد إلغاء هذا الطلب؟")) return;
+            const { error } = await supabase.from("requests").delete().eq("id", id).eq("employee_id", currentUser.id).eq("status", "pending");
+            if (error) return alert("فشل إلغاء الطلب: " + error.message);
+            loadMyRequests();
+        }
+
         async function loadMyMissions() {
-            const { data } = await supabase
-                .from('missions')
-                .select('*')
-                .eq('employee_id', currentUser.id)
-                .order('created_at', { ascending: false })
-            
-            const container = document.getElementById('missionsList')
-            const missions = data || []
-            
+            const { data, error } = await supabase
+                .from("missions")
+                .select("*")
+                .eq("employee_id", currentUser.id)
+                .order("created_at", { ascending: false });
+            if (error) return alert("فشل تحميل المأموريات: " + error.message);
+            const missions = data || [];
+            const container = $("missionsList");
             if (missions.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">📭 لا توجد مأموريات</div>'
-                return
+                container.innerHTML = '<div class="empty">لا توجد مأموريات</div>';
+                return;
             }
-            
-            container.innerHTML = missions.map(m => {
-                return `
-                    <div class="mission-card">
-                        <div class="request-header">
-                            <strong style="color: var(--text-primary);">${m.type}</strong>
-                            <span class="status status-approved">${m.status === 'active' ? '✅ نشطة' : '✅ مكتملة'}</span>
-                        </div>
-                        <div style="color: var(--text-secondary);">📅 من: ${m.start_date}</div>
-                        <div style="color: var(--text-secondary);">📅 إلى: ${m.end_date}</div>
-                        ${m.description ? `<div style="color: var(--text-muted); margin-top: 10px;">📝 ${m.description}</div>` : ''}
+            container.innerHTML = missions.map((m) => `
+                <article class="mission-card">
+                    <div class="card-header">
+                        <div class="card-title">${escapeHtml(m.type)}</div>
+                        <span class="badge status-approved">${m.status === "active" ? "نشطة" : "مكتملة"}</span>
                     </div>
-                `
-            }).join('')
+                    <div class="card-meta">
+                        <div>من: ${escapeHtml(m.start_date)}</div>
+                        <div>إلى: ${escapeHtml(m.end_date)}</div>
+                        ${m.description ? `<div>الوصف: ${escapeHtml(m.description)}</div>` : ""}
+                    </div>
+                </article>
+            `).join("");
         }
 
-        // ============ تغيير كلمة المرور ============
-        window.openChangePasswordModal = () => {
-            document.getElementById('changePasswordModal').style.display = 'flex'
-        }
+        $("requestForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const type = $("leaveType").value;
+            const startDate = $("startDate").value;
+            const days = Number.parseFloat($("days").value);
+            const remaining = (currentUser.total_annual || 30) - (currentUser.used || 0);
 
-        window.closeChangePasswordModal = () => {
-            document.getElementById('changePasswordModal').style.display = 'none'
-            document.getElementById('changePasswordForm').reset()
-        }
+            if (startDate < todayIso()) return alert("لا يمكن تقديم طلب بتاريخ سابق");
+            if (!Number.isFinite(days) || days <= 0) return alert("عدد الأيام غير صحيح");
+            if (days > remaining) return alert(`رصيدك المتبقي ${remaining} يوم فقط`);
 
-        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
-            e.preventDefault()
-            
-            const currentPass = document.getElementById('currentPassword').value
-            const newPass = document.getElementById('newPassword').value
-            const confirmPass = document.getElementById('confirmPassword').value
-            
-            if (currentPass !== currentUser.password) {
-                alert('❌ كلمة المرور الحالية غير صحيحة')
-                return
-            }
-            
-            if (newPass !== confirmPass) {
-                alert('❌ كلمة المرور الجديدة غير متطابقة')
-                return
-            }
-            
-            if (newPass.length < 3) {
-                alert('❌ كلمة المرور يجب أن تكون 3 أحرف على الأقل')
-                return
-            }
-            
-            await supabase.from('employees').update({ password: newPass }).eq('id', currentUser.id)
-            
-            currentUser.password = newPass
-            localStorage.setItem('currentUser', JSON.stringify(currentUser))
-            
-            alert('✅ تم تغيير كلمة المرور بنجاح')
-            closeChangePasswordModal()
-        })
+            const hasOverlap = myRequests.some((req) =>
+                ["pending", "approved"].includes(req.status) && dateRangesOverlap(startDate, days, req.start_date, req.days)
+            );
+            if (hasOverlap) return alert("يوجد طلب سابق متداخل مع هذه الفترة");
 
-        // ============ التبويبات ============
-        window.switchTab = (tabName) => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-            event.target.classList.add('active')
-            
-            document.getElementById('vacationsTab').classList.toggle('active', tabName === 'vacations')
-            document.getElementById('missionsTab').classList.toggle('active', tabName === 'missions')
-        }
+            $("submitRequest").disabled = true;
+            const { error } = await supabase.from("requests").insert([{ employee_id: currentUser.id, type, start_date: startDate, days, status: "pending" }]);
+            $("submitRequest").disabled = false;
+            if (error) return alert("فشل تقديم الطلب: " + error.message);
+            $("requestForm").reset();
+            updateEndDateHint();
+            await loadMyRequests();
+            alert("تم تقديم الطلب بنجاح");
+        });
 
-        // ============ تسجيل الخروج ============
-        window.logout = () => {
-            localStorage.removeItem('currentUser')
-            window.location.href = 'index.html'
-        }
+        $("requestsList").addEventListener("click", (event) => {
+            const button = event.target.closest("[data-action='cancel-request']");
+            if (button) cancelRequest(button.dataset.id);
+        });
 
-        checkAuth()
+        $("changePasswordForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const currentPass = $("currentPassword").value;
+            const newPass = $("newPassword").value;
+            const confirmPass = $("confirmPassword").value;
+            if (newPass !== confirmPass) return alert("كلمة المرور الجديدة غير متطابقة");
+            const { data, error: fetchError } = await supabase.from("employees").select("password").eq("id", currentUser.id).single();
+            if (fetchError) return alert("فشل التحقق من كلمة المرور: " + fetchError.message);
+            if (data.password !== currentPass) return alert("كلمة المرور الحالية غير صحيحة");
+            const { error } = await supabase.from("employees").update({ password: newPass }).eq("id", currentUser.id);
+            if (error) return alert("فشل تغيير كلمة المرور: " + error.message);
+            closeModal("changePasswordModal");
+            alert("تم تغيير كلمة المرور بنجاح");
+        });
+
+        document.querySelector(".tabs").addEventListener("click", (event) => {
+            const button = event.target.closest("[data-tab]");
+            if (!button) return;
+            document.querySelectorAll(".tab").forEach((tab) => tab.classList.remove("active"));
+            button.classList.add("active");
+            $("vacationsTab").classList.toggle("active", button.dataset.tab === "vacations");
+            $("missionsTab").classList.toggle("active", button.dataset.tab === "missions");
+        });
+
+        $("startDate").addEventListener("input", updateEndDateHint);
+        $("days").addEventListener("input", updateEndDateHint);
+        $("openChangePassword").addEventListener("click", () => openModal("changePasswordModal"));
+        $("closeChangePassword").addEventListener("click", () => closeModal("changePasswordModal"));
+        $("logoutButton").addEventListener("click", () => { localStorage.removeItem("currentUser"); window.location.href = "index.html"; });
+        $("themeToggle").addEventListener("click", () => {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        initTheme();
+        checkAuth();
     </script>
 </body>
 </html>

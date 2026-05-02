@@ -2,407 +2,224 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a1a2e">
     <title>MMC - نظام الإجازات</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-
-        /* Light Mode */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, sans-serif; }
         :root {
-            --bg-primary: #f5f5f5;
-            --bg-secondary: #ffffff;
-            --text-primary: #1a1a2e;
-            --text-secondary: #333333;
-            --text-muted: #666666;
-            --border-color: #e0e0e0;
-            --input-bg: #ffffff;
-            --shadow: rgba(0,0,0,0.1);
-            --gradient-start: #1a1a2e;
-            --gradient-end: #2d2d4e;
-            --card-bg: #ffffff;
-            --demo-bg: #f8f9fa;
-            --accent-color: #c9a84c;
+            --bg: #f4f6f8; --card: #ffffff; --text: #1a1a2e; --muted: #68707d;
+            --border: #dde2ea; --input: #ffffff; --shadow: rgba(18, 24, 38, .16);
+            --primary: #1a1a2e; --primary-2: #2d2d4e; --accent: #c9a84c;
+            --danger: #dc3545; --success: #198754;
         }
-
-        /* Dark Mode */
         [data-theme="dark"] {
-            --bg-primary: #0d0d1a;
-            --bg-secondary: #1a1a2e;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-muted: #888888;
-            --border-color: #2a2a4a;
-            --input-bg: #0f0f20;
-            --shadow: rgba(0,0,0,0.5);
-            --gradient-start: #1a1a2e;
-            --gradient-end: #0d0d1a;
-            --card-bg: #1a1a2e;
-            --demo-bg: #0f0f20;
-            --accent-color: #d4b85c;
+            --bg: #0d0d1a; --card: #17172b; --text: #f0f2f5; --muted: #a4a9b4;
+            --border: #2b2f48; --input: #101020; --shadow: rgba(0, 0, 0, .45);
+            --primary: #0d0d1a; --primary-2: #232344; --accent: #d4b85c;
         }
-
         body {
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            min-height: 100vh; display: grid; place-items: center; padding: 20px;
+            background:
+                radial-gradient(circle at top right, rgba(201,168,76,.2), transparent 30%),
+                linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: var(--text);
         }
-
-        .container {
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px var(--shadow);
-            padding: 40px;
-            width: 100%;
-            max-width: 420px;
-            animation: slideUp 0.5s ease;
-            border-top: 4px solid var(--accent-color);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ============ لوجو MMC ============ */
-        .company-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--accent-color);
-            box-shadow: 0 5px 15px var(--shadow);
-            border: 2px solid var(--accent-color);
-        }
-
-        .company-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--text-primary);
-            letter-spacing: 1px;
-        }
-
-        .company-name .consultancy {
-            font-size: 14px;
-            color: var(--accent-color);
-            display: block;
-            font-weight: normal;
-            letter-spacing: 3px;
-        }
-
-        .company-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 8px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .divider {
-            width: 50px;
-            height: 2px;
-            background: var(--accent-color);
-            margin: 15px auto;
-            opacity: 0.5;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            font-size: clamp(20px, 5vw, 22px);
-            font-weight: 500;
-        }
-
         .theme-toggle {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: var(--card-bg);
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 5px 15px var(--shadow);
-            color: var(--text-primary);
-            z-index: 1000;
-            border: 1px solid var(--border-color);
+            position: fixed; top: 18px; left: 18px; width: 44px; height: 44px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--card); color: var(--text);
+            cursor: pointer; box-shadow: 0 10px 24px var(--shadow); font-size: 20px;
         }
-
-        .form-group {
-            margin-bottom: 20px;
+        .container {
+            width: min(100%, 430px); background: var(--card); border-radius: 16px; padding: 34px;
+            border-top: 4px solid var(--accent); box-shadow: 0 24px 70px var(--shadow);
         }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-weight: 500;
+        .company-header { text-align: center; margin-bottom: 28px; }
+        .logo-container { display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 14px; }
+        .logo-icon {
+            width: 62px; height: 62px; border-radius: 12px; display: grid; place-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: var(--accent);
+            border: 2px solid var(--accent); font-size: 28px; font-weight: 800;
         }
-
+        .company-name { color: var(--text); font-weight: 800; font-size: 23px; letter-spacing: 1px; }
+        .company-name span { display: block; color: var(--accent); font-size: 13px; font-weight: 500; letter-spacing: 3px; }
+        .company-subtitle { color: var(--muted); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .divider { width: 56px; height: 2px; background: var(--accent); margin: 14px auto; opacity: .75; }
+        h1 { text-align: center; font-size: 22px; margin-bottom: 22px; color: var(--text); font-weight: 650; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 7px; color: var(--text); font-weight: 600; font-size: 14px; }
         input {
-            width: 100%;
-            padding: 14px 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 16px;
-            background: var(--input-bg);
-            color: var(--text-primary);
+            width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+            background: var(--input); color: var(--text); font-size: 16px;
         }
-
-        input:focus {
-            outline: none;
-            border-color: var(--accent-color);
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201,168,76,.18); }
+        .password-wrap { position: relative; }
+        .password-wrap input { padding-left: 52px; }
+        .show-password {
+            position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+            width: 38px; height: 34px; border: 0; border-radius: 8px; background: transparent;
+            color: var(--muted); cursor: pointer; font-size: 16px;
         }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: clamp(16px, 4vw, 18px);
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            border-bottom: 3px solid var(--accent-color);
+        .submit-btn {
+            width: 100%; padding: 14px; border: 0; border-radius: 10px; cursor: pointer;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff;
+            font-size: 17px; font-weight: 700; border-bottom: 3px solid var(--accent);
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px var(--shadow);
+        .submit-btn:disabled { opacity: .65; cursor: wait; }
+        .message {
+            display: none; margin-top: 14px; padding: 11px 12px; border-radius: 10px;
+            font-size: 14px; text-align: center; line-height: 1.6;
         }
-
-        .error-message {
-            color: #e74c3c;
-            text-align: center;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 15px;
-            color: var(--accent-color);
-        }
-
-        .demo-credentials {
-            margin-top: 25px;
-            padding: 15px;
-            background: var(--demo-bg);
-            border-radius: 10px;
-            font-size: 13px;
-            color: var(--text-primary);
-            border-right: 3px solid var(--accent-color);
-        }
-
-        .demo-credentials p {
-            margin: 5px 0;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* تصميم متجاوب */
+        .message.error { display: block; background: rgba(220,53,69,.12); color: var(--danger); }
+        .message.loading { display: block; background: rgba(201,168,76,.14); color: var(--accent); }
+        .footer { text-align: center; margin-top: 22px; color: var(--muted); font-size: 11px; }
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
-                align-items: flex-start;
-                padding-top: 70px;
-            }
-
-            .container {
-                padding: 25px 20px;
-            }
-
-            .logo-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-            }
-
-            .company-name {
-                font-size: 20px;
-            }
-
-            .theme-toggle {
-                top: 10px;
-                left: 10px;
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
-            }
+            body { align-items: start; padding-top: 76px; }
+            .container { padding: 26px 20px; }
+            .logo-container { gap: 10px; }
+            .logo-icon { width: 52px; height: 52px; font-size: 23px; }
+            .company-name { font-size: 19px; }
         }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+    <button class="theme-toggle" type="button" id="themeToggle" aria-label="تبديل الوضع">🌙</button>
 
-    <div class="container">
-        <!-- لوجو MMC -->
-        <div class="company-header">
+    <main class="container">
+        <section class="company-header" aria-label="بيانات الشركة">
             <div class="logo-container">
                 <div class="logo-icon">MMC</div>
                 <div class="company-name">
                     MURTADA MAAZ
-                    <span class="consultancy">CONSULTANCY</span>
+                    <span>CONSULTANCY</span>
                 </div>
             </div>
             <div class="divider"></div>
             <div class="company-subtitle">Engineering & Management Services</div>
-        </div>
+        </section>
 
         <h1>نظام إدارة الإجازات</h1>
-        
-        <form id="loginForm">
+
+        <form id="loginForm" autocomplete="on">
             <div class="form-group">
-                <label for="username">👤 اسم المستخدم</label>
-                <input type="text" id="username" required placeholder="أدخل اسم المستخدم">
+                <label for="username">اسم المستخدم</label>
+                <input type="text" id="username" autocomplete="username" required placeholder="أدخل اسم المستخدم">
             </div>
-            
+
             <div class="form-group">
-                <label for="password">🔒 كلمة المرور</label>
-                <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+                <label for="password">كلمة المرور</label>
+                <div class="password-wrap">
+                    <input type="password" id="password" autocomplete="current-password" required placeholder="أدخل كلمة المرور">
+                    <button class="show-password" type="button" id="showPassword" aria-label="إظهار كلمة المرور">👁</button>
+                </div>
             </div>
-            
-            <button type="submit">تسجيل الدخول</button>
+
+            <button class="submit-btn" id="loginButton" type="submit">تسجيل الدخول</button>
         </form>
-        
-        <div class="loading" id="loading">جاري تسجيل الدخول...</div>
-        <div class="error-message" id="errorMessage"></div>
-        
-        <div class="demo-credentials">
-        
-        <div class="footer">
-            © 2026 MURTADA MAAZ CONSULTANCY. All rights reserved
-        </div>
-    </div>
+
+        <div class="message" id="message" role="status"></div>
+        <div class="footer">© 2026 MURTADA MAAZ CONSULTANCY. All rights reserved</div>
+    </main>
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-        
-        const SUPABASE_URL = 'https://ueszjhtztdlqaduogzog.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlc3pqaHR6dGRscWFkdW9nem9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDkxNDksImV4cCI6MjA5MjE4NTE0OX0.euN5Uijw9WXt2aGuk-sNWMMZ78IIiuxVOBBvuzjobxk'
-        
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-        // ============ Dark Mode ============
+        const SUPABASE_URL = "https://ueszjhtztdlqaduogzog.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlc3pqaHR6dGRscWFkdW9nem9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDkxNDksImV4cCI6MjA5MjE4NTE0OX0.euN5Uijw9WXt2aGuk-sNWMMZ78IIiuxVOBBvuzjobxk";
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loginForm = document.getElementById("loginForm");
+        const loginButton = document.getElementById("loginButton");
+        const message = document.getElementById("message");
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+
         function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light'
-            document.documentElement.setAttribute('data-theme', savedTheme)
-            updateThemeIcon(savedTheme)
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme')
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
-            document.documentElement.setAttribute('data-theme', newTheme)
-            localStorage.setItem('theme', newTheme)
-            updateThemeIcon(newTheme)
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            updateThemeIcon(savedTheme);
         }
 
         function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeToggle')
-            icon.textContent = theme === 'dark' ? '☀️' : '🌙'
-            document.querySelector('meta[name="theme-color"]').content = 
-                theme === 'dark' ? '#0d0d1a' : '#1a1a2e'
+            document.getElementById("themeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
+            document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#0d0d1a" : "#1a1a2e";
         }
 
-        window.toggleTheme = toggleTheme
-        initTheme()
+        function setMessage(text, type) {
+            message.textContent = text;
+            message.className = type ? `message ${type}` : "message";
+        }
 
-        // ============ تسجيل الدخول ============
-        const loginForm = document.getElementById('loginForm')
-        const errorMessage = document.getElementById('errorMessage')
-        const loading = document.getElementById('loading')
+        function saveSession(user) {
+            const sessionUser = {
+                id: user.id,
+                name: user.name,
+                role: user.role,
+                total_annual: user.total_annual || 30,
+                used: user.used || 0
+            };
+            localStorage.setItem("currentUser", JSON.stringify(sessionUser));
+            localStorage.setItem("lastUsername", user.name);
+        }
 
-        const savedUser = localStorage.getItem('currentUser')
+        function redirectByRole(user) {
+            window.location.href = user.role === "admin" ? "admin.html" : "employee.html";
+        }
+
+        document.getElementById("themeToggle").addEventListener("click", () => {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        document.getElementById("showPassword").addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+            document.getElementById("showPassword").textContent = isHidden ? "🙈" : "👁";
+        });
+
+        const savedUser = localStorage.getItem("currentUser");
         if (savedUser) {
             try {
-                const user = JSON.parse(savedUser)
-                if (user.role === 'admin') {
-                    window.location.href = 'admin.html'
-                } else {
-                    window.location.href = 'employee.html'
-                }
-            } catch (e) {
-                localStorage.removeItem('currentUser')
+                redirectByRole(JSON.parse(savedUser));
+            } catch {
+                localStorage.removeItem("currentUser");
             }
         }
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault()
-            
-            const username = document.getElementById('username').value
-            const password = document.getElementById('password').value
-            
-            loading.style.display = 'block'
-            errorMessage.style.display = 'none'
-            
+        usernameInput.value = localStorage.getItem("lastUsername") || "";
+        initTheme();
+
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            if (!username || !password) return;
+
+            loginButton.disabled = true;
+            setMessage("جاري تسجيل الدخول...", "loading");
+
             try {
                 const { data, error } = await supabase
-                    .from('employees')
-                    .select('*')
-                    .eq('name', username)
-                    .eq('password', password)
-                    .single()
-                
-                if (error || !data) {
-                    throw new Error('اسم المستخدم أو كلمة المرور غير صحيحة')
-                }
-                
-                localStorage.setItem('currentUser', JSON.stringify(data))
-                
-                if (data.role === 'admin') {
-                    window.location.href = 'admin.html'
-                } else {
-                    window.location.href = 'employee.html'
-                }
-                
+                    .from("employees")
+                    .select("id, name, role, total_annual, used, password")
+                    .eq("name", username)
+                    .eq("password", password)
+                    .maybeSingle();
+
+                if (error) throw error;
+                if (!data) throw new Error("اسم المستخدم أو كلمة المرور غير صحيحة");
+
+                saveSession(data);
+                redirectByRole(data);
             } catch (error) {
-                errorMessage.textContent = error.message
-                errorMessage.style.display = 'block'
-                loading.style.display = 'none'
+                setMessage(error.message || "حدث خطأ أثناء تسجيل الدخول", "error");
+                loginButton.disabled = false;
             }
-        })
+        });
     </script>
 </body>
 </html>
