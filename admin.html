@@ -269,6 +269,8 @@
         let allRequests = [];
         let allEmployees = [];
         let allMissions = [];
+        const CREATE_EMPLOYEE_FUNCTION = "admin-create-employee";
+        const SET_EMPLOYEE_PASSWORD_FUNCTION = "admin-set-employee-password";
 
         const $ = (id) => document.getElementById(id);
         const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
@@ -278,9 +280,14 @@
             const { data, error } = await supabase.functions.invoke(name, { body });
             if (error) {
                 let message = error.message || "فشلت العملية";
+                if (message.includes("Failed to send a request")) {
+                    message = "تعذر الاتصال بـ Edge Function. تأكد أن الدالة منشورة في Supabase وبنفس الاسم.";
+                }
                 try {
-                    const details = await error.context.json();
-                    message = details.error || message;
+                    if (error.context) {
+                        const details = await error.context.json();
+                        message = details.error || message;
+                    }
                 } catch {
                     // Keep the default message when the function did not return JSON.
                 }
@@ -514,7 +521,7 @@
             }
 
             try {
-                await invokeAdminFunction("admin-set-employee-password", {
+                await invokeAdminFunction(SET_EMPLOYEE_PASSWORD_FUNCTION, {
                     employee_id: id,
                     username: finalUsername,
                     password
@@ -642,7 +649,7 @@
             const password = $("empPassword").value;
             const totalDays = Number.parseInt($("empTotalDays").value, 10) || 30;
             try {
-                await invokeAdminFunction("admin-create-employee", {
+                await invokeAdminFunction(CREATE_EMPLOYEE_FUNCTION, {
                     name,
                     username,
                     password,
