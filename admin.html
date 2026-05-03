@@ -227,6 +227,7 @@
             <h2>إضافة موظف</h2>
             <form id="addEmployeeForm">
                 <div class="form-group"><label>اسم الموظف</label><input type="text" id="empName" required></div>
+                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="empUsername" required placeholder="مثال: ahmed"></div>
                 <div class="form-group"><label>كلمة المرور</label><input type="password" id="empPassword" minlength="3" required></div>
                 <div class="form-group"><label>الرصيد السنوي</label><input type="number" id="empTotalDays" value="30" min="1" max="365"></div>
                 <button class="btn btn-success" style="width:100%" type="submit">إضافة</button>
@@ -287,13 +288,25 @@
         function openModal(id) { $(id).classList.add("show"); }
         function closeModal(id) { $(id).classList.remove("show"); const form = $(id).querySelector("form"); if (form) form.reset(); }
 
-        function checkAuth() {
-            try {
-                currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-            } catch {
-                currentUser = null;
+        async function checkAuth() {
+            const { data: sessionData } = await supabase.auth.getSession();
+            const authUser = sessionData.session?.user;
+            if (!authUser) return window.location.href = "index.html";
+
+            const { data: employee, error } = await supabase
+                .from("employees")
+                .select("id, name, username, role, total_annual, used")
+                .eq("auth_user_id", authUser.id)
+                .single();
+
+            if (error || !employee) {
+                await supabase.auth.signOut();
+                localStorage.removeItem("currentUser");
+                return window.location.href = "index.html";
             }
-            if (!currentUser) return window.location.href = "index.html";
+
+            currentUser = employee;
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
             if (currentUser.role !== "admin") return window.location.href = "employee.html";
             $("userName").textContent = `مدير: ${currentUser.name}`;
             loadAllData();
@@ -476,7 +489,9 @@
             const password = prompt(`أدخل كلمة المرور الجديدة للموظف "${name}":`);
             if (!password) return;
             if (password.length < 3) return alert("كلمة المرور يجب أن تكون 3 أحرف على الأقل");
-            const { error } = await supabase.from("employees").update({ password }).eq("id", id);
+            const { error } = await supabase.functions.invoke("admin-set-employee-password", {
+                body: { employee_id: id, password }
+            });
             if (error) return alert("فشل تغيير كلمة المرور: " + error.message);
             alert("تم تغيير كلمة المرور بنجاح");
         }
@@ -590,9 +605,12 @@
         $("addEmployeeForm").addEventListener("submit", async (event) => {
             event.preventDefault();
             const name = $("empName").value.trim();
+            const username = $("empUsername").value.trim().toLowerCase();
             const password = $("empPassword").value;
             const totalDays = Number.parseInt($("empTotalDays").value, 10) || 30;
-            const { error } = await supabase.from("employees").insert([{ name, password, total_annual: totalDays, used: 0, role: "employee" }]);
+            const { error } = await supabase.functions.invoke("admin-create-employee", {
+                body: { name, username, password, total_annual: totalDays }
+            });
             if (error) return alert("فشل إضافة الموظف: " + error.message);
             closeModal("addEmployeeModal");
             loadAllEmployees();
@@ -618,10 +636,10 @@
             const newPass = $("newPassword").value;
             const confirmPass = $("confirmPassword").value;
             if (newPass !== confirmPass) return alert("كلمة المرور الجديدة غير متطابقة");
-            const { data, error: fetchError } = await supabase.from("employees").select("password").eq("id", currentUser.id).single();
-            if (fetchError) return alert("فشل التحقق من كلمة المرور: " + fetchError.message);
-            if (data.password !== currentPass) return alert("كلمة المرور الحالية غير صحيحة");
-            const { error } = await supabase.from("employees").update({ password: newPass }).eq("id", currentUser.id);
+            const email = `${currentUser.username || currentUser.name}`.trim().toLowerCase() + "@mmc.local";
+            const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: currentPass });
+            if (signInError) return alert("كلمة المرور الحالية غير صحيحة");
+            const { error } = await supabase.auth.updateUser({ password: newPass });
             if (error) return alert("فشل تغيير كلمة المرور: " + error.message);
             closeModal("changePasswordModal");
             alert("تم تغيير كلمة المرور بنجاح");
@@ -634,7 +652,11 @@
         $("exportRequests").addEventListener("click", () => exportToExcel("requests"));
         $("exportEmployees").addEventListener("click", () => exportToExcel("employees"));
         $("exportMissions").addEventListener("click", () => exportToExcel("missions"));
-        $("logoutButton").addEventListener("click", () => { localStorage.removeItem("currentUser"); window.location.href = "index.html"; });
+        $("logoutButton").addEventListener("click", async () => {
+            await supabase.auth.signOut();
+            localStorage.removeItem("currentUser");
+            window.location.href = "index.html";
+        });
         $("themeToggle").addEventListener("click", () => {
             const currentTheme = document.documentElement.getAttribute("data-theme");
             const newTheme = currentTheme === "dark" ? "light" : "dark";

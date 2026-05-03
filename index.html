@@ -103,7 +103,7 @@
         <form id="loginForm" autocomplete="on">
             <div class="form-group">
                 <label for="username">اسم المستخدم</label>
-                <input type="text" id="username" autocomplete="username" required placeholder="أدخل اسم المستخدم">
+                <input type="text" id="username" autocomplete="username" required placeholder="مثال: ahmed">
             </div>
 
             <div class="form-group">
@@ -148,6 +148,10 @@
         function setMessage(text, type) {
             message.textContent = text;
             message.className = type ? `message ${type}` : "message";
+        }
+
+        function usernameToEmail(username) {
+            return `${username.trim().toLowerCase()}@mmc.local`;
         }
 
         function saveSession(user) {
@@ -203,15 +207,21 @@
             setMessage("جاري تسجيل الدخول...", "loading");
 
             try {
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email: usernameToEmail(username),
+                    password
+                });
+
+                if (authError) throw new Error("اسم المستخدم أو كلمة المرور غير صحيحة");
+
                 const { data, error } = await supabase
                     .from("employees")
-                    .select("id, name, role, total_annual, used, password")
-                    .eq("name", username)
-                    .eq("password", password)
+                    .select("id, name, username, role, total_annual, used")
+                    .eq("auth_user_id", authData.user.id)
                     .maybeSingle();
 
                 if (error) throw error;
-                if (!data) throw new Error("اسم المستخدم أو كلمة المرور غير صحيحة");
+                if (!data) throw new Error("لم يتم العثور على بيانات الموظف");
 
                 saveSession(data);
                 redirectByRole(data);
