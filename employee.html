@@ -7,6 +7,7 @@
     <title>MMC - لوحة الموظف</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, sans-serif; }
+        html { width: 100%; min-height: 100%; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
         :root {
             --bg: #f4f6f8; --card: #fff; --text: #1a1a2e; --muted: #667085; --border: #dde2ea;
             --input: #fff; --shadow: rgba(18,24,38,.1); --primary: #1a1a2e; --primary-2: #2d2d4e;
@@ -17,20 +18,22 @@
             --input: #101020; --shadow: rgba(0,0,0,.4); --primary: #0d0d1a; --primary-2: #232344;
             --accent: #d4b85c;
         }
-        body { min-height: 100vh; background: var(--bg); color: var(--text); }
+        body { min-height: 100vh; min-height: 100svh; background: var(--bg); color: var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        button, input, select { font: inherit; }
+        button { line-height: 1.2; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         .header {
             position: sticky; top: 0; z-index: 100; background: linear-gradient(135deg, var(--primary), var(--primary-2));
             color: #fff; border-bottom: 3px solid var(--accent); padding: 12px 15px;
         }
         .header-content { max-width: 1200px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
         .brand { display: flex; align-items: center; gap: 10px; }
-        .logo { width: 42px; height: 42px; display: grid; place-items: center; border: 1.5px solid var(--accent); border-radius: 9px; color: var(--accent); font-weight: 800; }
+        .logo { width: 42px; height: 42px; display: grid; place-items: center; border: 1.5px solid var(--accent); border-radius: 9px; color: var(--accent); font-weight: 800; line-height: 1; flex: 0 0 42px; }
         .brand h1 { font-size: 15px; line-height: 1.2; }
         .brand span { display: block; color: var(--accent); font-size: 9px; letter-spacing: 1px; }
         .header-actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
         .header-btn {
             border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.12); color: #fff;
-            padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px;
+            padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; min-height: 36px;
         }
         #userName { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
         .container { max-width: 1200px; margin: 18px auto; padding: 0 14px; }
@@ -48,7 +51,7 @@
         }
         .tab {
             flex: 1 0 170px; border: 0; background: transparent; color: var(--muted); padding: 10px 12px;
-            border-radius: 8px; cursor: pointer; font-weight: 650;
+            border-radius: 8px; cursor: pointer; font-weight: 650; min-height: 42px;
         }
         .tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; }
         .tab-content { display: none; }
@@ -67,7 +70,7 @@
         input:focus, select:focus { outline: none; border-color: var(--accent); }
         .btn {
             border: 0; border-radius: 8px; padding: 11px 14px; cursor: pointer; font-size: 14px; font-weight: 750;
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px;
         }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; border-bottom: 3px solid var(--accent); }
         .btn-danger { background: var(--danger); color: #fff; }
@@ -149,6 +152,13 @@
                                 <option value="سنوية">سنوية</option>
                                 <option value="مرضية">مرضية</option>
                                 <option value="طارئة">طارئة</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="leaveYear">سنة الإجازة</label>
+                            <select id="leaveYear" required>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
                             </select>
                         </div>
                         <div>
@@ -263,7 +273,6 @@
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
             if (currentUser.role === "admin") return window.location.href = "admin.html";
             $("userName").textContent = `الموظف: ${currentUser.name}`;
-            $("startDate").min = todayIso();
             loadPageData();
         }
 
@@ -324,6 +333,7 @@
                         <div class="card-meta">
                             <div>تاريخ البدء: ${escapeHtml(req.start_date)}</div>
                             <div>تاريخ النهاية: ${escapeHtml(endDate)}</div>
+                            <div>سنة الإجازة: ${escapeHtml(req.leave_year || new Date(req.start_date).getFullYear())}</div>
                             <div>عدد الأيام: ${escapeHtml(req.days)} يوم</div>
                             <div>تاريخ التقديم: ${new Date(req.created_at).toLocaleDateString("ar-SA")}</div>
                         </div>
@@ -371,21 +381,24 @@
         $("requestForm").addEventListener("submit", async (event) => {
             event.preventDefault();
             const type = $("leaveType").value;
+            const leaveYear = Number.parseInt($("leaveYear").value, 10);
             const startDate = $("startDate").value;
             const days = Number.parseFloat($("days").value);
             const remaining = (currentUser.total_annual || 30) - (currentUser.used || 0);
 
-            if (startDate < todayIso()) return alert("لا يمكن تقديم طلب بتاريخ سابق");
+            if (new Date(startDate).getFullYear() !== leaveYear) return alert("تاريخ البدء يجب أن يكون داخل سنة الإجازة المختارة");
             if (!Number.isFinite(days) || days <= 0) return alert("عدد الأيام غير صحيح");
             if (days > remaining) return alert(`رصيدك المتبقي ${remaining} يوم فقط`);
 
             const hasOverlap = myRequests.some((req) =>
-                ["pending", "approved"].includes(req.status) && dateRangesOverlap(startDate, days, req.start_date, req.days)
+                ["pending", "approved"].includes(req.status) &&
+                Number(req.leave_year || new Date(req.start_date).getFullYear()) === leaveYear &&
+                dateRangesOverlap(startDate, days, req.start_date, req.days)
             );
             if (hasOverlap) return alert("يوجد طلب سابق متداخل مع هذه الفترة");
 
             $("submitRequest").disabled = true;
-            const { error } = await supabase.from("requests").insert([{ employee_id: currentUser.id, type, start_date: startDate, days, status: "pending" }]);
+            const { error } = await supabase.from("requests").insert([{ employee_id: currentUser.id, type, start_date: startDate, days, leave_year: leaveYear, status: "pending" }]);
             $("submitRequest").disabled = false;
             if (error) return alert("فشل تقديم الطلب: " + error.message);
             $("requestForm").reset();

@@ -7,6 +7,7 @@
     <title>MMC - لوحة المدير</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, sans-serif; }
+        html { width: 100%; min-height: 100%; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
         :root {
             --bg: #f4f6f8; --card: #fff; --text: #1a1a2e; --muted: #667085; --border: #dde2ea;
             --input: #fff; --shadow: rgba(18,24,38,.1); --primary: #1a1a2e; --primary-2: #2d2d4e;
@@ -18,20 +19,22 @@
             --input: #101020; --shadow: rgba(0,0,0,.4); --primary: #0d0d1a; --primary-2: #232344;
             --accent: #d4b85c; --table: #101020;
         }
-        body { min-height: 100vh; background: var(--bg); color: var(--text); }
+        body { min-height: 100vh; min-height: 100svh; background: var(--bg); color: var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        button, input, select, textarea { font: inherit; }
+        button { line-height: 1.2; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         .header {
             position: sticky; top: 0; z-index: 100; background: linear-gradient(135deg, var(--primary), var(--primary-2));
             color: #fff; border-bottom: 3px solid var(--accent); padding: 10px 14px;
         }
         .header-content { max-width: 1380px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
         .brand { display: flex; align-items: center; gap: 9px; }
-        .logo { width: 40px; height: 40px; display: grid; place-items: center; border: 1.5px solid var(--accent); border-radius: 8px; color: var(--accent); font-weight: 800; }
+        .logo { width: 40px; height: 40px; display: grid; place-items: center; border: 1.5px solid var(--accent); border-radius: 8px; color: var(--accent); font-weight: 800; line-height: 1; flex: 0 0 40px; }
         .brand h1 { font-size: 14px; line-height: 1.2; }
         .brand span { display: block; color: var(--accent); font-size: 8px; letter-spacing: 1px; }
         .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .header-btn {
             border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.12); color: #fff;
-            padding: 7px 9px; border-radius: 7px; cursor: pointer; font-size: 12px;
+            padding: 7px 9px; border-radius: 7px; cursor: pointer; font-size: 12px; min-height: 34px;
         }
         #userName { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
         .container { max-width: 1380px; margin: 16px auto; padding: 0 12px; }
@@ -41,7 +44,7 @@
         }
         .tab {
             flex: 1 0 120px; border: 0; background: transparent; color: var(--muted); padding: 10px 12px;
-            border-radius: 8px; cursor: pointer; font-weight: 650;
+            border-radius: 8px; cursor: pointer; font-weight: 650; min-height: 40px;
         }
         .tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; }
         .tab-content { display: none; }
@@ -74,7 +77,7 @@
         .remaining.low { background: #fdecea; color: #b42318; }
         .btn {
             border: 0; border-radius: 7px; padding: 8px 10px; cursor: pointer; font-size: 12px; font-weight: 700;
-            display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 34px;
         }
         .btn-success { background: var(--success); color: #fff; }
         .btn-danger { background: var(--danger); color: #fff; }
@@ -147,6 +150,13 @@
             <div class="filters">
                 <div><input id="requestSearch" type="search" placeholder="بحث باسم الموظف أو نوع الإجازة"></div>
                 <div>
+                    <select id="yearFilter">
+                        <option value="">كل السنوات</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </div>
+                <div>
                     <select id="statusFilter">
                         <option value="">كل الحالات</option>
                         <option value="pending">قيد الانتظار</option>
@@ -160,13 +170,16 @@
             <div class="section">
                 <div class="section-title">
                     <h2>جميع الطلبات</h2>
-                    <button class="btn btn-success" type="button" id="exportRequests">📊 Excel</button>
+                    <div class="actions">
+                        <button class="btn btn-success" type="button" id="exportRequests">📊 طلبات Excel</button>
+                        <button class="btn btn-info" type="button" id="exportAllData">📦 كل البيانات</button>
+                    </div>
                 </div>
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>الموظف</th><th>النوع</th><th>تاريخ البدء</th><th>الأيام</th><th>المتبقي</th><th>الحالة</th><th>إجراءات</th>
+                                <th>الموظف</th><th>السنة</th><th>النوع</th><th>تاريخ البدء</th><th>الأيام</th><th>المتبقي</th><th>الحالة</th><th>إجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="requestsTableBody"></tbody>
@@ -359,14 +372,17 @@
 
         function getFilteredRequests() {
             const search = $("requestSearch").value.trim().toLowerCase();
+            const year = $("yearFilter").value;
             const status = $("statusFilter").value;
             const date = $("dateFilter").value;
             return allRequests.filter((req) => {
                 const empName = req.employees?.name || "";
+                const requestYear = String(req.leave_year || new Date(req.start_date).getFullYear());
                 const matchesSearch = !search || empName.toLowerCase().includes(search) || String(req.type).toLowerCase().includes(search);
+                const matchesYear = !year || requestYear === year;
                 const matchesStatus = !status || req.status === status;
                 const matchesDate = !date || req.start_date === date;
-                return matchesSearch && matchesStatus && matchesDate;
+                return matchesSearch && matchesYear && matchesStatus && matchesDate;
             });
         }
 
@@ -374,7 +390,7 @@
             const requests = getFilteredRequests();
             const tbody = $("requestsTableBody");
             if (requests.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty">لا توجد طلبات مطابقة</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="empty">لا توجد طلبات مطابقة</td></tr>';
                 return;
             }
             tbody.innerHTML = requests.map((req) => {
@@ -384,6 +400,7 @@
                 return `
                     <tr>
                         <td>${escapeHtml(employee.name || "غير معروف")}</td>
+                        <td>${escapeHtml(req.leave_year || new Date(req.start_date).getFullYear())}</td>
                         <td>${escapeHtml(req.type)}</td>
                         <td>${escapeHtml(req.start_date)}</td>
                         <td>${escapeHtml(req.days)}</td>
@@ -576,6 +593,7 @@
             if (type === "requests") {
                 data = getFilteredRequests().map((r) => ({
                     "الموظف": r.employees?.name || "غير معروف",
+                    "سنة الإجازة": r.leave_year || new Date(r.start_date).getFullYear(),
                     "نوع الإجازة": r.type,
                     "تاريخ البدء": r.start_date,
                     "عدد الأيام": r.days,
@@ -609,6 +627,43 @@
             XLSX.writeFile(wb, fileName);
         }
 
+        function exportAllDataToExcel() {
+            const requestsData = allRequests.map((r) => ({
+                "الموظف": r.employees?.name || "غير معروف",
+                "سنة الإجازة": r.leave_year || new Date(r.start_date).getFullYear(),
+                "نوع الإجازة": r.type,
+                "تاريخ البدء": r.start_date,
+                "عدد الأيام": r.days,
+                "الحالة": statusText[r.status] || r.status,
+                "تاريخ الإنشاء": r.created_at || ""
+            }));
+
+            const employeesData = allEmployees.map((e) => ({
+                "اسم الموظف": e.name,
+                "اسم المستخدم": e.username || "",
+                "الصلاحية": e.role === "admin" ? "مدير" : "موظف",
+                "الرصيد السنوي": e.total_annual || 30,
+                "المستخدم": e.used || 0,
+                "المتبقي": (e.total_annual || 30) - (e.used || 0)
+            }));
+
+            const missionsData = allMissions.map((m) => ({
+                "الموظف": m.employees?.name || "غير معروف",
+                "النوع": m.type,
+                "تاريخ البدء": m.start_date,
+                "تاريخ الانتهاء": m.end_date,
+                "الوصف": m.description || "-",
+                "الحالة": m.status === "active" ? "نشطة" : "مكتملة",
+                "تاريخ الإنشاء": m.created_at || ""
+            }));
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(requestsData), "طلبات الإجازات");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(employeesData), "الموظفون");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(missionsData), "المأموريات");
+            XLSX.writeFile(wb, "كل_بيانات_MMC.xlsx");
+        }
+
         document.querySelector(".tabs").addEventListener("click", (event) => {
             const button = event.target.closest("[data-tab]");
             if (!button) return;
@@ -617,7 +672,7 @@
             ["requests", "employees", "missions"].forEach((name) => $(name + "Tab").classList.toggle("active", name === button.dataset.tab));
         });
 
-        ["requestSearch", "statusFilter", "dateFilter"].forEach((id) => $(id).addEventListener("input", renderRequests));
+        ["requestSearch", "yearFilter", "statusFilter", "dateFilter"].forEach((id) => $(id).addEventListener("input", renderRequests));
 
         $("requestsTableBody").addEventListener("click", (event) => {
             const button = event.target.closest("[data-action]");
@@ -696,6 +751,7 @@
         $("openAddEmployee").addEventListener("click", () => openModal("addEmployeeModal"));
         $("openAddMission").addEventListener("click", () => openModal("addMissionModal"));
         $("exportRequests").addEventListener("click", () => exportToExcel("requests"));
+        $("exportAllData").addEventListener("click", exportAllDataToExcel);
         $("exportEmployees").addEventListener("click", () => exportToExcel("employees"));
         $("exportMissions").addEventListener("click", () => exportToExcel("missions"));
         $("logoutButton").addEventListener("click", async () => {
