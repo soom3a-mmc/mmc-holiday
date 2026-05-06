@@ -179,7 +179,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>الموظف</th><th>السنة</th><th>النوع</th><th>تاريخ البدء</th><th>الأيام</th><th>المتبقي</th><th>الحالة</th><th>إجراءات</th>
+                                <th>الموظف</th><th>السنة</th><th>النوع</th><th>تاريخ البدء</th><th>تاريخ النهاية</th><th>الأيام</th><th>المتبقي</th><th>الحالة</th><th>إجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="requestsTableBody"></tbody>
@@ -288,6 +288,7 @@
         const $ = (id) => document.getElementById(id);
         const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
         const statusText = { pending: "قيد الانتظار", approved: "مقبول", rejected: "مرفوض" };
+        const ANNUAL_LEAVE_TYPE = "سنوية";
 
         async function invokeAdminFunction(name, body) {
             const { data, error } = await supabase.functions.invoke(name, { body });
@@ -386,23 +387,51 @@
             });
         }
 
+        function addDays(startDate, days) {
+            const date = new Date(startDate + "T00:00:00");
+            date.setDate(date.getDate() + Math.ceil(Number(days)) - 1);
+            return date.toISOString().slice(0, 10);
+        }
+
+        function getRequestEndDate(request) {
+            return request.end_date || addDays(request.start_date, request.days);
+        }
+
+        function getRequestYear(request) {
+            return Number(request.leave_year || new Date(request.start_date).getFullYear());
+        }
+
+        function getAnnualUsed(employeeId, year) {
+            return allRequests
+                .filter((request) =>
+                    String(request.employee_id) === String(employeeId) &&
+                    request.status === "approved" &&
+                    request.type === ANNUAL_LEAVE_TYPE &&
+                    getRequestYear(request) === Number(year)
+                )
+                .reduce((total, request) => total + Number(request.days || 0), 0);
+        }
+
         function renderRequests() {
             const requests = getFilteredRequests();
             const tbody = $("requestsTableBody");
             if (requests.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="empty">لا توجد طلبات مطابقة</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="empty">لا توجد طلبات مطابقة</td></tr>';
                 return;
             }
             tbody.innerHTML = requests.map((req) => {
                 const employee = req.employees || {};
-                const remaining = (employee.total_annual || 30) - (employee.used || 0);
+                const requestYear = getRequestYear(req);
+                const usedForYear = getAnnualUsed(req.employee_id, requestYear);
+                const remaining = (employee.total_annual || 30) - usedForYear;
                 const canApprove = req.status === "pending";
                 return `
                     <tr>
                         <td>${escapeHtml(employee.name || "غير معروف")}</td>
-                        <td>${escapeHtml(req.leave_year || new Date(req.start_date).getFullYear())}</td>
+                        <td>${escapeHtml(requestYear)}</td>
                         <td>${escapeHtml(req.type)}</td>
                         <td>${escapeHtml(req.start_date)}</td>
+                        <td>${escapeHtml(getRequestEndDate(req))}</td>
                         <td>${escapeHtml(req.days)}</td>
                         <td><span class="badge remaining ${remaining < 5 ? "low" : ""}">${remaining}</span></td>
                         <td><span class="badge status-${escapeHtml(req.status)}">${statusText[req.status] || escapeHtml(req.status)}</span></td>
@@ -423,8 +452,11 @@
             const request = allRequests.find((r) => String(r.id) === String(id));
             if (!request || request.status !== "pending") return;
             const employee = request.employees;
-            const remaining = (employee?.total_annual || 30) - (employee?.used || 0);
-            if (Number(request.days) > remaining) {
+            const requestYear = getRequestYear(request);
+            const usedForYear = getAnnualUsed(request.employee_id, requestYear);
+            const remaining = (employee?.total_annual || 30) - usedForYear;
+            const shouldDeductAnnual = request.type === ANNUAL_LEAVE_TYPE;
+            if (shouldDeductAnnual && Number(request.days) > remaining) {
                 alert(`لا يمكن قبول الطلب. الرصيد المتبقي ${remaining} يوم فقط.`);
                 return;
             }
@@ -435,9 +467,14 @@
             }
             const { error: requestError } = await supabase.from("requests").update({ status: "approved" }).eq("id", id).eq("status", "pending");
             if (requestError) return alert("فشل قبول الطلب: " + requestError.message);
-            const newUsed = (employee?.used || 0) + Number(request.days || 0);
-            const { error: empError } = await supabase.from("employees").update({ used: newUsed }).eq("id", request.employee_id);
-            if (empError) alert("تم قبول الطلب لكن فشل تحديث الرصيد: " + empError.message);
+            if (shouldDeductAnnual) {
+                const currentYear = new Date().getFullYear();
+                if (requestYear === currentYear) {
+                    const newUsed = usedForYear + Number(request.days || 0);
+                    const { error: empError } = await supabase.from("employees").update({ used: newUsed }).eq("id", request.employee_id);
+                    if (empError) alert("تم قبول الطلب لكن فشل تحديث الرصيد: " + empError.message);
+                }
+            }
             loadAllData();
         }
 
@@ -452,11 +489,15 @@
             const request = allRequests.find((r) => String(r.id) === String(id));
             if (!request) return;
             if (!confirm("إرجاع الطلب إلى قيد الانتظار؟")) return;
-            if (request.status === "approved") {
+            if (request.status === "approved" && request.type === ANNUAL_LEAVE_TYPE) {
                 const employee = request.employees;
-                const newUsed = Math.max(0, (employee?.used || 0) - Number(request.days || 0));
-                const { error: empError } = await supabase.from("employees").update({ used: newUsed }).eq("id", request.employee_id);
-                if (empError) return alert("فشل تعديل الرصيد: " + empError.message);
+                const requestYear = getRequestYear(request);
+                const currentYear = new Date().getFullYear();
+                if (requestYear === currentYear) {
+                    const newUsed = Math.max(0, getAnnualUsed(request.employee_id, requestYear) - Number(request.days || 0));
+                    const { error: empError } = await supabase.from("employees").update({ used: newUsed }).eq("id", request.employee_id);
+                    if (empError) return alert("فشل تعديل الرصيد: " + empError.message);
+                }
             }
             const { error } = await supabase.from("requests").update({ status: "pending" }).eq("id", id);
             if (error) return alert("فشل إرجاع الطلب: " + error.message);
@@ -596,6 +637,7 @@
                     "سنة الإجازة": r.leave_year || new Date(r.start_date).getFullYear(),
                     "نوع الإجازة": r.type,
                     "تاريخ البدء": r.start_date,
+                    "تاريخ النهاية": getRequestEndDate(r),
                     "عدد الأيام": r.days,
                     "الحالة": statusText[r.status] || r.status
                 }));
@@ -633,6 +675,7 @@
                 "سنة الإجازة": r.leave_year || new Date(r.start_date).getFullYear(),
                 "نوع الإجازة": r.type,
                 "تاريخ البدء": r.start_date,
+                "تاريخ النهاية": getRequestEndDate(r),
                 "عدد الأيام": r.days,
                 "الحالة": statusText[r.status] || r.status,
                 "تاريخ الإنشاء": r.created_at || ""
